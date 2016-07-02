@@ -1,0 +1,38 @@
+{
+  "name": "piquouze",
+  "version": "1.0.0",
+  "description": "A featureful dependency injection module",
+  "main": "src/index.js",
+  "scripts": {
+    "doc": "jsdoc --destination doc --recurse src",
+    "lint": "eslint . --ignore-path .gitignore",
+    "test": "mocha --check-leaks --require ./alias --recursive test",
+    "coverage": "istanbul cover -- _mocha --check-leaks --require ./alias --recursive test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pinicarus/piquouze.git"
+  },
+  "keywords": [
+    "ioc",
+    "di",
+    "container",
+    "injection",
+    "dependency"
+  ],
+  "author": "Pierre-Nicolas Clauss",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/pinicarus/piquouze/issues"
+  },
+  "homepage": "https://github.com/pinicarus/piquouze#readme",
+  "dependencies": {
+    "get-parameter-names": "^0.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.0.0",
+    "istanbul": "^0.4.4",
+    "jsdoc": "^3.4.0",
+    "mocha": "^2.5.3"
+  }
+}
