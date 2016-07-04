@@ -14,17 +14,17 @@ describe("policies", function () {
       const factory = () => ({});
       let   policy  = new AlwaysPolicy();
 
-      const value = policy.getValue(undefined, factory);
+      const value = policy.getValue({name: "factory"}, factory);
       assert(value instanceof Object);
 
-      assert(policy.getValue(undefined, factory) === value);
-      assert(policy.getValue(undefined, factory) === value);
-      assert(policy.getValue(undefined, factory) === value);
+      assert(policy.getValue({name: "factory"}, factory) === value);
+      assert(policy.getValue({name: "factory"}, factory) === value);
+      assert(policy.getValue({name: "factory"}, factory) === value);
 
       policy = new AlwaysPolicy();
-      assert(policy.getValue(undefined, factory) === value);
-      assert(policy.getValue(undefined, factory) === value);
-      assert(policy.getValue(undefined, factory) === value);
+      assert(policy.getValue({name: "factory"}, factory) === value);
+      assert(policy.getValue({name: "factory"}, factory) === value);
+      assert(policy.getValue({name: "factory"}, factory) === value);
     });
   });
 });

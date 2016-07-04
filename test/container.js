@@ -2,10 +2,16 @@
 
 const assert = require("assert");
 
-const Container = requireSrc("container");
-const NeverPolicy = requireSrc("policies", "never");
+const Container          = requireSrc("container");
+const NeverPolicy        = requireSrc("policies", "never");
+const PerInjectionPolicy = requireSrc("policies", "per-injection");
 
 describe("Container", function () {
+  const mark = (inject, functor) => {
+    functor.$inject = inject;
+    return functor;
+  };
+
   it("should conform", function () {
     assert(Container instanceof Function);
   });
@@ -16,6 +22,33 @@ describe("Container", function () {
     container.registerFactory("a", () => {});
     container.registerFactory("a", () => {}, new NeverPolicy());
     assert.throws(() => container.registerFactory("a", () => {}, 1), TypeError);
+  });
+
+  it("should allow policy sharing", function () {
+    const container = new Container();
+    const policy    = new PerInjectionPolicy();
+
+    container.registerFactory("a", () => ({}));
+    container.registerFactory("x", () => ({}));
+
+    const functor = mark(["a", "a", "x", "x"], (a, b, c, d) => [a, b, c, d]);
+    const values1 = container.inject(functor)();
+
+    assert(values1[0] === values1[1]);
+    assert(values1[0] !== values1[2]);
+    assert(values1[0] !== values1[3]);
+    assert(values1[2] === values1[3]);
+
+    const values2 = container.inject(functor)();
+
+    assert(values2[0] === values2[1]);
+    assert(values2[0] !== values2[2]);
+    assert(values2[0] !== values2[3]);
+    assert(values2[2] === values2[3]);
+
+    assert(values1[0] !== values2[0]);
+    assert(values1[2] !== values2[0]);
+    assert(values1[2] !== values2[2]);
   });
 
   it("should create child container", function () {

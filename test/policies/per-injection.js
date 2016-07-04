@@ -11,9 +11,9 @@ describe("policies", function () {
     });
 
     it("should cache values per injection", function () {
-      const context1 = {injector: {}};
-      const context2 = {injector: {}};
-      const context3 = {injector: {}};
+      const context1 = {injector: {}, name: "factory"};
+      const context2 = {injector: {}, name: "factory"};
+      const context3 = {injector: {}, name: "factory"};
 
       const factory = () => ({});
       let   policy  = new PerInjectionPolicy();

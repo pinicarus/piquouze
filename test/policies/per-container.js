@@ -11,9 +11,9 @@ describe("policies", function () {
     });
 
     it("should cache values per container", function () {
-      const context1 = {container: {}};
-      const context2 = {container: {}};
-      const context3 = {container: {}};
+      const context1 = {container: {}, name: "factory"};
+      const context2 = {container: {}, name: "factory"};
+      const context3 = {container: {}, name: "factory"};
 
       const factory = () => ({});
       let   policy  = new PerContainerPolicy();

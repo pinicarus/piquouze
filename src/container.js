@@ -5,6 +5,8 @@ const PerInjectionPolicy = require("./policies/per-injection");
 const Policy = require("./policy");
 const mark = require("./mark");
 
+const defaultPolicy = new PerInjectionPolicy();
+
 const _container = Symbol("container");
 
 /**
@@ -61,7 +63,7 @@ const Container = class Container {
     mark(functor);
     this[_container][name] = {
       value:  functor,
-      policy: policy || new PerInjectionPolicy(),
+      policy: policy || defaultPolicy,
     };
   }
 

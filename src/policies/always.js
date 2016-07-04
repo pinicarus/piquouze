@@ -2,7 +2,7 @@
 
 const Policy = require("../policy");
 
-let cache = undefined;
+const cache = {};
 
 /**
  * A caching policy that will cache values forever across all containers.
@@ -17,10 +17,12 @@ const AlwaysPolicy = class extends Policy {
    * @returns {*} The first value ever constructed from the factory.
    */
   getValue(context, factory) {
-    if (cache === undefined) {
-      cache = factory();
+    let value = cache[context.name];
+
+    if (!value) {
+      cache[context.name] = value = factory();
     }
-    return cache;
+    return value;
   }
 };
 

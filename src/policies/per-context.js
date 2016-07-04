@@ -32,11 +32,17 @@ const PerContextPolicy = class extends Policy {
    */
   getValue(context, factory) {
     const field = context[this[_field]];
-    let   value = this[_cache].get(field);
+    let   cache = this[_cache].get(field);
+
+    if (!cache) {
+      cache = {};
+      this[_cache].set(field, cache);
+    }
+
+    let value = cache[context.name];
 
     if (!value) {
-      value = factory();
-      this[_cache].set(field, value);
+      cache[context.name] = value = factory();
     }
     return value;
   }
