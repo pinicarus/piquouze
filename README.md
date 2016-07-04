@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/pinicarus/piquouze.svg?branch=master)](https://travis-ci.org/pinicarus/piquouze)
+
 # Piquouze
 
 `piquouze` is a featureful dependency injection module for
