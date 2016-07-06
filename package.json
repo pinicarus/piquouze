@@ -1,6 +1,6 @@
 {
   "name": "piquouze",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A featureful dependency injection module",
   "main": "src/index.js",
   "scripts": {
