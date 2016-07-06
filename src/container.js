@@ -53,9 +53,13 @@ const Container = class Container {
    * @param {Function} functor - The actual factory.
    * @param {Policy=}  policy  - The caching policy.
    *
+   * @throws {TypeError} Whenever the functor does not inherit from Function.
    * @throws {TypeError} Whenever the policy does not inherit from Policy.
    */
   registerFactory(name, functor, policy) {
+    if (!(functor instanceof Function)) {
+      throw new TypeError("functor does not inherit from Function");
+    }
     if (policy && !(policy instanceof Policy)) {
       throw new TypeError("policy does not inherit from Policy");
     }
@@ -72,9 +76,13 @@ const Container = class Container {
    *
    * @param {Function} functor - The functor to inject.
    *
-   * @returns {Function} The injected functor.
+   * @returns {Function}  The injected functor.
+   * @throws  {TypeError} Whenever the functor does not inherit from Function.
    */
   inject(functor) {
+    if (!(functor instanceof Function)) {
+      throw new TypeError("functor does not inherit from Function");
+    }
     return new Injector().inject(this[_container], functor);
   }
 };

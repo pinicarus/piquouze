@@ -16,7 +16,13 @@ describe("Container", function () {
     assert(Container instanceof Function);
   });
 
-  it("should check policy type", function () {
+  it("should check registerFactory functor type", function () {
+    const container = new Container();
+
+    assert.throws(() => container.registerFactory("a", "b"), TypeError);
+  });
+
+  it("should check registerFactory policy type", function () {
     const container = new Container();
 
     container.registerFactory("a", () => {});
@@ -24,12 +30,18 @@ describe("Container", function () {
     assert.throws(() => container.registerFactory("a", () => {}, 1), TypeError);
   });
 
+  it("should check inject functor type", function () {
+    const container = new Container();
+
+    assert.throws(() => container.inject("a"), TypeError);
+  });
+
   it("should allow policy sharing", function () {
     const container = new Container();
     const policy    = new PerInjectionPolicy();
 
-    container.registerFactory("a", () => ({}));
-    container.registerFactory("x", () => ({}));
+    container.registerFactory("a", () => ({}), policy);
+    container.registerFactory("x", () => ({}), policy);
 
     const functor = mark(["a", "a", "x", "x"], (a, b, c, d) => [a, b, c, d]);
     const values1 = container.inject(functor)();
