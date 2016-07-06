@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/pinicarus/piquouze#readme",
   "dependencies": {
-    "get-parameter-names": "^0.3.0"
+    "esprima": "^2.7.2"
   },
   "devDependencies": {
     "eslint": "^3.0.0",

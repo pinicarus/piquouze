@@ -14,5 +14,6 @@ module.exports = Object.freeze({
     Cycle:             require("./errors/cycle"),
     MissingDependency: require("./errors/missing"),
     NotImplemented:    require("./errors/not-implemented"),
+    Scan:              require("./errors/scan"),
   }),
 });
