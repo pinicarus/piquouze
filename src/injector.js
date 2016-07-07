@@ -81,12 +81,26 @@ const Injector = class Injector {
     });
 
     return function () {
-      const bound = functor.bind.apply(functor, [undefined].concat(
-        dependencies,
-        Array.from(arguments)
-      ));
+      const args = dependencies.concat(Array.from(arguments));
 
-      return functor.hasOwnProperty("prototype") ? new bound() : bound();
+      switch (functor.$kind) {
+      case "class": {
+        const bound = functor.bind.apply(functor, [undefined].concat(args));
+
+        return new bound();
+      }
+      case "function": {
+        const instance = Object.create(functor.prototype);
+        const result   = functor.apply(instance, args);
+
+        return result instanceof Object
+          || Object.getOwnPropertyNames(instance).length === 0
+					? result
+					: instance;
+      }
+      default:
+        return functor.apply(undefined, args);
+      }
     };
   }
 };

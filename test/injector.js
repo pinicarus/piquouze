@@ -8,6 +8,19 @@ const NeverPolicy            = requireSrc("policies", "never");
 
 describe("Injector", function () {
   const mark = (inject, functor) => {
+    const text = functor.toString();
+
+    switch (true) {
+    case text.startsWith("class"):
+      functor.$kind = "class";
+      break;
+    case text.startsWith("function"):
+      functor.$kind = "function";
+      break;
+    default:
+      functor.$kind = "arrow";
+      break;
+    }
     functor.$inject = inject;
     return functor;
   };
