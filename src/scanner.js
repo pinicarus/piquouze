@@ -4,26 +4,34 @@ const esprima = require("esprima");
 
 const ScanError = require("./errors/scan");
 
-const makeAssert = (functor) => (truthy) => {
-  if (!truthy) {
-    throw new ScanError(functor);
-  }
+const makeAssert = function makeAssert(functor) {
+  return (truthy) => {
+    if (!truthy) {
+      throw new ScanError(functor);
+    }
+  };
 };
 
+const _kind   = Symbol("kind");
+const _params = Symbol("params");
+
+/**
+ * Scans functors.
+ * @private
+ */
 const Scanner = class Scanner {
   /**
-   * Scans a functor injectable parameters names.
-   * @private
+   * Constructs a new functor scanner.
    *
    * @param {Function} functor - The functor to scan.
    *
-   * @returns {String[]}  The functor parameter names.
-   * @throws  {ScanError} Whenever scanning of the functor fails.
+   * @throws {ScanError} Whenever scanning of the functor fails.
    */
-  scan(functor) {
+  constructor(functor) {
     const assert = makeAssert(functor);
-    const text   = functor.toString();
-    let   node   = esprima.parse(`_ = ${text}`, {sourceType: "module"});
+    let   node   = esprima.parse(`_ = ${functor.toString()}`, {
+      sourceType: "module",
+    });
 
     assert(node);
     assert(node.type === esprima.Syntax.Program);
@@ -35,27 +43,50 @@ const Scanner = class Scanner {
     assert(node.type === esprima.Syntax.AssignmentExpression);
     node = node.right;
 
-    switch (true) {
-    case text.startsWith("class"):
-      assert(node.type === esprima.Syntax.ClassExpression);
+    switch (node.type) {
+    case esprima.Syntax.ArrowFunctionExpression:
+      this[_kind] = "arrow";
+      node = node.params;
+      break;
+    case esprima.Syntax.ClassExpression:
+      this[_kind] = "class";
       node = node.body;
       assert(node.type === esprima.Syntax.ClassBody);
       node = node.body.find((method) => method.kind === "constructor");
       assert(node);
       node = node.value;
-      // fallthrough
-    case text.startsWith("function"):
       assert(node.type === esprima.Syntax.FunctionExpression);
       node = node.params;
       break;
-    default:
-      assert(node.type === esprima.Syntax.ArrowFunctionExpression);
+    case esprima.Syntax.FunctionExpression:
+      this[_kind] = "function";
       node = node.params;
       break;
+    default:
+      assert(false);
     }
-    return node
+
+    this[_params] = node
       .filter((param) => param.type === esprima.Syntax.Identifier)
       .map((param) => param.name);
+  }
+
+  /**
+   * Returns the kind of a functor (class, function or arrow).
+   *
+   * @returns {String} The functor kind.
+   */
+  getKind() {
+    return this[_kind];
+  }
+
+  /**
+   * Returns the functor injectable parameter names.
+   *
+   * @returns {String[]} The functor parameter names.
+   */
+  getParams() {
+    return this[_params];
   }
 };
 

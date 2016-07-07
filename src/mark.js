@@ -17,8 +17,8 @@ const mark = function mark(functor) {
   if (!(inject instanceof Array)) {
     const scanner = new Scanner(functor);
 
-    inject = scanner.scan(functor);
-    functor.$inject = inject;
+    functor.$kind   = scanner.getKind();
+    functor.$inject = inject = scanner.getParams();
   }
   return inject;
 };

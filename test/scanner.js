@@ -14,132 +14,151 @@ describe("Scanner", function () {
 
   describe("with 0 parameters", function () {
     it("should scan anonymous arrow function", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(() => {});
 
-      assert.deepEqual(scanner.scan(() => {}), []);
+      assert.equal(scanner.getKind(), "arrow");
+      assert.deepEqual(scanner.getParams(), []);
     });
 
     it("should scan anonymous function", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(function () {});
 
-      assert.deepEqual(scanner.scan(function () {}), []);
+      assert.equal(scanner.getKind(), "function");
+      assert.deepEqual(scanner.getParams(), []);
     });
 
     it("should scan named function", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(function f() {});
 
-      assert.deepEqual(scanner.scan(function f() {}), []);
+      assert.equal(scanner.getKind(), "function");
+      assert.deepEqual(scanner.getParams(), []);
     });
 
     it("should scan anonymous class", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(class {constructor() {}});
 
-      assert.deepEqual(scanner.scan(class {constructor() {}}), []);
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), []);
     });
 
     it("should scan anonymous extending class", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class extends _ {
+      const scanner = new Scanner(class extends _ {
         constructor() {
           super();
         }
-      }), []);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), []);
     });
 
     it("should scan named class", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(class C {constructor() {}});
 
-      assert.deepEqual(scanner.scan(class C {constructor() {}}), []);
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), []);
     });
 
     it("should scan named extending class", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class C extends _ {
+      const scanner = new Scanner(class C extends _ {
         constructor() {
           super();
         }
-      }), []);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), []);
     });
 
     it("should scan class not starting with constructor", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(class {
+        foo() {}
+        constructor() {}
+      });
 
-      assert.deepEqual(scanner.scan(class {foo() {} constructor() {}}), []);
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), []);
     });
   });
 
   describe("with 1 parameter", function () {
     it("should scan anonymous arrow function w/o parenthesis", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(a => {});
 
-      assert.deepEqual(scanner.scan(a => {}), ["a"]);
+      assert.equal(scanner.getKind(), "arrow");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should scan anonymous arrow function w/ parenthesis", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner((a) => {});
 
-      assert.deepEqual(scanner.scan((a) => {}), ["a"]);
+      assert.equal(scanner.getKind(), "arrow");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should scan anonymous function", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(function (a) {});
 
-      assert.deepEqual(scanner.scan(function (a) {}), ["a"]);
+      assert.equal(scanner.getKind(), "function");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should scan named function", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(function f(a) {});
 
-      assert.deepEqual(scanner.scan(function f(a) {}), ["a"]);
+      assert.equal(scanner.getKind(), "function");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should scan anonymous class", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(class {constructor(a) {}});
 
-      assert.deepEqual(scanner.scan(class {constructor(a) {}}), ["a"]);
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should scan anonymous extending class", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class extends _ {
+      const scanner = new Scanner(class extends _ {
         constructor(a) {
           super();
         }
-      }), ["a"]);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should scan named class", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(class C {constructor(a) {}});
 
-      assert.deepEqual(scanner.scan(class C {constructor(a) {}}), ["a"]);
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should scan named extending class", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class C extends _ {
+      const scanner = new Scanner(class C extends _ {
         constructor(a) {
           super();
         }
-      }), ["a"]);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should scan class not starting with constructor", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class {
+      const scanner = new Scanner(class {
         foo() {}
+
         constructor(a) {}
-      }), ["a"]);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
 
     it("should not mistake constructor", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class {
+      const scanner = new Scanner(class {
         foo(b) {
           const constructor = (x) => {};
 
@@ -147,76 +166,85 @@ describe("Scanner", function () {
         }
 
         constructor(a) {}
-      }), ["a"]);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a"]);
     });
   });
 
   describe("with 2 parameters", function () {
     it("should scan anonymous arrow function", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner((a, b) => {});
 
-      assert.deepEqual(scanner.scan((a, b) => {}), ["a", "b"]);
+      assert.equal(scanner.getKind(), "arrow");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
 
     it("should scan anonymous function", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(function (a, b) {});
 
-      assert.deepEqual(scanner.scan(function (a, b) {}), ["a", "b"]);
+      assert.equal(scanner.getKind(), "function");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
 
     it("should scan named function", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(function f(a, b) {});
 
-      assert.deepEqual(scanner.scan(function f(a, b) {}), ["a", "b"]);
+      assert.equal(scanner.getKind(), "function");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
 
     it("should scan anonymous class", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(class {
+        constructor(a, b) {}
+      });
 
-      assert.deepEqual(scanner.scan(class {constructor(a, b) {}}), ["a", "b"]);
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
 
     it("should scan anonymous extending class", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class extends _ {
+      const scanner = new Scanner(class extends _ {
         constructor(a, b) {
           super();
         }
-      }), ["a", "b"]);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
 
     it("should scan named class", function () {
-      const scanner = new Scanner();
+      const scanner = new Scanner(class C {constructor(a, b) {}});
 
-      assert.deepEqual(scanner.scan(class C {
-        constructor(a, b) {}
-      }), ["a", "b"]);
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
 
     it("should scan named extending class", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class C extends _ {
+      const scanner = new Scanner(class C extends _ {
         constructor(a, b) {
           super();
         }
-      }), ["a", "b"]);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
 
     it("should scan class not starting with constructor", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class {
+      const scanner = new Scanner(class {
         foo() {}
         constructor(a, b) {}
-      }), ["a", "b"]);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
 
     it("should not mistake constructor", function () {
-      const scanner = new Scanner();
-
-      assert.deepEqual(scanner.scan(class {
+      const scanner = new Scanner(class {
         foo(c, d) {
           const constructor = (x, y) => {};
 
@@ -224,13 +252,18 @@ describe("Scanner", function () {
         }
 
         constructor(a, b) {}
-      }), ["a", "b"]);
+      });
+
+      assert.equal(scanner.getKind(), "class");
+      assert.deepEqual(scanner.getParams(), ["a", "b"]);
     });
   });
 
   it("should fail to scan class with missing constructor", function () {
-    const scanner = new Scanner();
+    assert.throws(() => new Scanner(class {}), ScanError);
+  });
 
-    assert.throws(() => scanner.scan(class {}), ScanError);
+  it("should fail to scan non-functor", function () {
+    assert.throws(() => new Scanner(42), ScanError);
   });
 });
