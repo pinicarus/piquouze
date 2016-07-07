@@ -14,6 +14,24 @@
 - Clean error on dependencies cycle
 - Extensible dependencies caching policies
 
+## Caveats
+
+Because of the nature of the Javascript legacy, it is very hard to properly
+determine whether a regular function (one using the `function` keyword) is
+actually a prototype constructor or a simple function.
+
+It is generally harmless to call a simple function with the `new` keyword.
+However, doing so is considered a prototype instantiation and as such, the
+actual value returned from the `new` keyword is the return value of the
+function *if and only if* it is a an Object (of any kind). Primitive values
+(`undefined`, `null`, booleans, numbers, strings, symbols) will be substituted
+by the value of the receiver (the `this` value).
+
+`piquouze` will mimic the effects of the `new` operator on calls to injected
+regular function if the return value is an instance of `Object` or if the bound
+receiver has own properties after the call. Otherwise it will return the
+function return value.
+
 ## Requirements
 
 `piquouze` work with NodeJS 4.x and above. Install it the usual way:
@@ -63,7 +81,7 @@ console.log(instance.value); // -> 42
 Dependencies are automatically inferred from the name of the parameters, but
 they can also be forced:
 
-```
+```javascript
 myTargetClass.$inject = ["anotherConst", "anotherLog"];
 ```
 
@@ -100,14 +118,14 @@ and will be resolved by name from children to parent containers.
 
 Factories can be registered too:
 
-```
+```javascript
 container.registerFactory("myFactory", (myConst) => ({data: myConst}));
 ```
 
 Dependencies on factories will be injected as factories results (or instance if
 the factory was a class):
 
-```
+```javascript
 functor = container.inject((myFactory) => myFactory);
 console.log(functor()); // -> {data: 42}
 ```
@@ -115,7 +133,7 @@ console.log(functor()); // -> {data: 42}
 Factories can be register with an optional caching policy indicating how often
 the factory is to be called to get new values:
 
-```
+```javascript
 container.registerFactory("myFactory", (myConst) => ({data: myConst}), new piquouze.caching.PerContainer());
 ```
 
