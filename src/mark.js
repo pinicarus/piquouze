@@ -14,7 +14,7 @@ const makeScanner = function (functor) {
 };
 
 /**
- * Marks a functor with the names of its injectable dependencies.
+ * Marks a functor with the names of its injectable properties.
  * @private
  *
  * @param {Function} functor - The functor to mark for injection.
@@ -39,7 +39,10 @@ const mark = function mark(functor) {
   if (!(inject instanceof Array)) {
     functor.$inject = inject = scanner().getParams();
   }
-  return inject;
+  if (!(functor.$defaults instanceof Object)) {
+    functor.$defaults = scanner().getDefaults();
+  }
+  return inject
 };
 
 module.exports = mark;

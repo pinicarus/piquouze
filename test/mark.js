@@ -17,6 +17,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "function");
       assert.equal(functor.$name, undefined);
       assert.deepEqual(functor.$inject, []);
+      assert.deepEqual(functor.$defaults, {});
     });
 
     it("should mark named function", function () {
@@ -26,6 +27,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "function");
       assert.equal(functor.$name, "f");
       assert.deepEqual(functor.$inject, []);
+      assert.deepEqual(functor.$defaults, {});
     });
 
     it("should mark arrow function", function () {
@@ -35,6 +37,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "arrow");
       assert.equal(functor.$name, undefined);
       assert.deepEqual(functor.$inject, []);
+      assert.deepEqual(functor.$defaults, {});
     });
   });
 
@@ -46,6 +49,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "function");
       assert.equal(functor.$name, undefined);
       assert.deepEqual(functor.$inject, ["a"]);
+      assert.deepEqual(functor.$defaults, {});
     });
 
     it("should mark named function", function () {
@@ -55,6 +59,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "function");
       assert.equal(functor.$name, "f");
       assert.deepEqual(functor.$inject, ["a"]);
+      assert.deepEqual(functor.$defaults, {});
     });
 
     it("should mark arrow function", function () {
@@ -64,6 +69,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "arrow");
       assert.equal(functor.$name, undefined);
       assert.deepEqual(functor.$inject, ["a"]);
+      assert.deepEqual(functor.$defaults, {});
     });
   });
 
@@ -75,6 +81,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "function");
       assert.equal(functor.$name, undefined);
       assert.deepEqual(functor.$inject, ["a", "b"]);
+      assert.deepEqual(functor.$defaults, {});
     });
 
     it("should mark named function", function () {
@@ -84,6 +91,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "function");
       assert.equal(functor.$name, "f");
       assert.deepEqual(functor.$inject, ["a", "b"]);
+      assert.deepEqual(functor.$defaults, {});
     });
 
     it("should mark arrow function", function () {
@@ -93,6 +101,7 @@ describe("mark", function () {
       assert.equal(functor.$kind, "arrow");
       assert.equal(functor.$name, undefined);
       assert.deepEqual(functor.$inject, ["a", "b"]);
+      assert.deepEqual(functor.$defaults, {});
     });
   });
 
@@ -102,6 +111,7 @@ describe("mark", function () {
     functor.$kind = "custom";
     mark(functor);
     assert.equal(functor.$kind, "custom");
+    assert.deepEqual(functor.$defaults, {});
   });
 
   it("should accept given $name", function () {
@@ -110,6 +120,7 @@ describe("mark", function () {
     functor.$name= "custom";
     mark(functor);
     assert.equal(functor.$name, "custom");
+    assert.deepEqual(functor.$defaults, {});
   });
 
   it("should accept given $inject names", function () {
@@ -118,5 +129,6 @@ describe("mark", function () {
     functor.$inject = ["d", "e", "f"];
     mark(functor);
     assert.deepEqual(functor.$inject, ["d", "e", "f"]);
+    assert.deepEqual(functor.$defaults, {});
   });
 });
