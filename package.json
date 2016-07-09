@@ -6,8 +6,9 @@
   "scripts": {
     "doc": "jsdoc --destination doc --recurse src",
     "lint": "eslint . --ignore-path .gitignore",
-    "test": "mocha --check-leaks --require ./alias --recursive test",
-    "coverage": "istanbul cover -- _mocha --check-leaks --require ./alias --recursive test"
+    "unittest": "mocha --check-leaks --require ./alias --recursive test",
+    "test": "istanbul cover --report lcovonly -- _mocha --reporter spec --check-leaks --require ./alias --recursive test",
+    "posttest": "cat coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "esprima": "^2.7.2"
   },
   "devDependencies": {
+    "coveralls": "^2.11.9",
     "eslint": "^3.0.0",
     "istanbul": "^0.4.4",
     "jsdoc": "^3.4.0",
