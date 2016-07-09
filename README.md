@@ -20,6 +20,9 @@
 - Clean error on dependencies cycle
 - Extensible dependencies caching policies
 
+See the [changelog](https://github.com/pinicarus/piquouze/blob/master/CHANGELOG.md) and the
+[API reference](https://github.com/pinicarus/piquouze/blob/master/API.md)
+
 ## Caveats
 
 Because of the nature of the Javascript legacy, it is very hard to properly
@@ -154,3 +157,30 @@ container.registerFactory("myFactory", (myConst) => ({data: myConst}), new piquo
 - `caching.PerContainer`: the value is cached once per container
 - `caching.PerInjection`: the value is cached once per injection (this is the default)
 - `caching.Never`: the value is never cached
+
+## Factories
+
+Factories are functors that are in turn injectable with dependencies.
+
+Factories can be registered with the own name (or the name can be forced):
+
+```javascript
+container.registerFactory("name", function () {return 1;});
+container.registerFactory(function name() {return 1;});
+```
+
+Factory dependencies can have default values, either as function default values
+(for node > 6.x, in which case they cannot depend on external identifiers) or
+as decorations on the functor itself (in which case they can in turn be
+injected, recursively):
+
+```javascript
+container.registerFactory("name", (a, b = 1) => a + b);
+
+const functor = (a, b) => a + b;
+functor.$defaults = {a: 1, b: (dependency) => dependency.value};
+container.registerFactory("name", functor);
+```
+
+Functors injected at the container level can have default values for their
+dependencies as well.
