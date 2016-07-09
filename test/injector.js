@@ -7,7 +7,7 @@ const MissingDependencyError = requireSrc("errors", "missing");
 const NeverPolicy            = requireSrc("policies", "never");
 
 describe("Injector", function () {
-  const mark = (inject, functor) => {
+  const mark = (inject, defaults, functor) => {
     const text = functor.toString();
 
     switch (true) {
@@ -21,7 +21,8 @@ describe("Injector", function () {
       functor.$kind = "arrow";
       break;
     }
-    functor.$inject = inject;
+    functor.$inject   = inject;
+    functor.$defaults = defaults;
     return functor;
   };
 
@@ -66,7 +67,7 @@ describe("Injector", function () {
       it("should inject a function", function () {
         const functor = new Injector().inject(
           container(),
-          mark([], function (a) {
+          mark([], {}, function (a) {
             return [a];
           })
         );
@@ -78,7 +79,7 @@ describe("Injector", function () {
       it("should inject an arrow function", function () {
         const functor = new Injector().inject(
           container(),
-          mark([], (a) => [a])
+          mark([], {}, (a) => [a])
         );
 
         assert(functor instanceof Function);
@@ -94,7 +95,7 @@ describe("Injector", function () {
 
         const functor = new Injector().inject(
           container(),
-          mark([], target)
+          mark([], {}, target)
         );
 
         assert(functor instanceof Function);
@@ -149,7 +150,7 @@ describe("Injector", function () {
       it("should inject a function ", function () {
         const functor = new Injector().inject(
             container(),
-            mark(["a"], function (a, b) {
+            mark(["a"], {}, function (a, b) {
               return [a, b];
             })
         );
@@ -161,7 +162,7 @@ describe("Injector", function () {
       it("should inject an arrow function", function () {
         const functor = new Injector().inject(
           container(),
-          mark(["a"], (a, b) => [a, b])
+          mark(["a"], {}, (a, b) => [a, b])
         );
 
         assert(functor instanceof Function);
@@ -177,7 +178,7 @@ describe("Injector", function () {
 
         const functor = new Injector().inject(
           container(),
-          mark(["a"], target)
+          mark(["a"], {}, target)
         );
 
         assert(functor instanceof Function);
@@ -233,7 +234,7 @@ describe("Injector", function () {
       it("should inject a function", function () {
         const functor = new Injector().inject(
           container(),
-          mark(["a", "b"], function (a, b, c) {
+          mark(["a", "b"], {}, function (a, b, c) {
             return [a, b, c];
           })
         );
@@ -245,7 +246,7 @@ describe("Injector", function () {
       it("should inject an arrow function", function () {
         const functor = new Injector().inject(
           container(),
-          mark(["a", "b"], (a, b, c) => [a, b, c])
+          mark(["a", "b"], {}, (a, b, c) => [a, b, c])
         );
 
         assert(functor instanceof Function);
@@ -261,7 +262,7 @@ describe("Injector", function () {
 
         const functor = new Injector().inject(
           container(),
-          mark(["a", "b"], target)
+          mark(["a", "b"], {}, target)
         );
 
         assert(functor instanceof Function);
@@ -274,6 +275,25 @@ describe("Injector", function () {
     });
   });
 
+  it("should resolve with default values", function () {
+    const container = {
+      a: {value: 1},
+      c: {value: 3},
+    };
+
+    const functor = new Injector().inject(
+      container,
+      mark(["a", "b", "c", "d"], {
+        b: 2,
+        d: (a) => a + 4,
+      }, (a, b, c, d) => [a, b, c, d])
+    );
+
+    const values = functor();
+
+    assert.deepEqual(values, [1, 2, 3, 5]);
+  });
+
   it("should reuse resolved dependencies", function () {
     const container = {
       a: {value: {}},
@@ -281,7 +301,7 @@ describe("Injector", function () {
 
     const functor = new Injector().inject(
       container,
-      mark(["a", "a"], (a, b) => assert(a === b))
+      mark(["a", "a"], {}, (a, b) => assert(a === b))
     );
 
     assert.doesNotThrow(functor);
@@ -296,7 +316,7 @@ describe("Injector", function () {
     const container = {
       a: {value: 1},
       b: {
-        value:  mark(["a"], (a) => [a]),
+        value:  mark(["a"], {}, (a) => [a]),
         policy: new NeverPolicy(),
       },
     };
