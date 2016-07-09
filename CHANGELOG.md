@@ -1,4 +1,4 @@
-# 1;0.4
+# 1.0.4
 
   - Apply new operator on regular function expected to behave as prototype
 	 constructors.

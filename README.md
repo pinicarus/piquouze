@@ -1,9 +1,13 @@
-[![Build Status](https://travis-ci.org/pinicarus/piquouze.svg?branch=master)](https://travis-ci.org/pinicarus/piquouze)
-
 # Piquouze
 
 `piquouze` is a featureful dependency injection module for
 [nodejs](https://nodejs.org).
+
+[![NPM Summary](https://nodei.co/npm/piquouze.png)](https://www.npmjs.com/package/piquouze)
+
+[![NPM Downloads](https://nodei.co/npm-dl/piquouze.png?months=1)](https://www.npmjs.com/package/piquouze)
+
+[![Build Status](https://travis-ci.org/pinicarus/piquouze.svg?branch=master)](https://travis-ci.org/pinicarus/piquouze)
 
 ## Features
 
@@ -31,6 +35,11 @@ by the value of the receiver (the `this` value).
 regular function if the return value is an instance of `Object` or if the bound
 receiver has own properties after the call. Otherwise it will return the
 function return value.
+
+Furthermore, bound function cannot be register as factories or injected (but
+they can be registered as value). This is because there is no clean way to
+retrieve the bounded function parameters and thus it cannot be injected
+properly.
 
 ## Requirements
 
