@@ -36,6 +36,24 @@ describe("Container", function () {
     assert.throws(() => container.inject("a"), TypeError);
   });
 
+  it("should allow registry of named factories", function () {
+    const container = new Container();
+
+    container.registerFactory(function f () { return 1; });
+    container.registerFactory(function g () { return 2; }, new NeverPolicy());
+    container.registerFactory("h", function x () { return 3; });
+
+    const values = container.inject((f, g, h) => [f, g, h]);
+
+    assert.deepEqual(values(), [1, 2, 3]);
+  });
+
+  it("should fail to register anonymous factories w/o name", function () {
+    const container = new Container();
+
+    assert.throws(() => container.registerFactory(() => {}), TypeError);
+  });
+
   it("should allow policy sharing", function () {
     const container = new Container();
     const policy    = new PerInjectionPolicy();
