@@ -1,6 +1,7 @@
 "use strict";
 
-const esprima = require("esprima");
+const escodegen = require("escodegen");
+const esprima   = require("esprima");
 
 const ScanError = require("./errors/scan");
 
@@ -12,8 +13,10 @@ const makeAssert = function makeAssert(functor) {
   };
 };
 
-const _kind   = Symbol("kind");
-const _params = Symbol("params");
+const _kind     = Symbol("kind");
+const _name     = Symbol("name");
+const _params   = Symbol("params");
+const _defaults = Symbol("defaults");
 
 /**
  * Scans functors.
@@ -42,33 +45,59 @@ const Scanner = class Scanner {
     node = node.expression;
     assert(node.type === esprima.Syntax.AssignmentExpression);
     node = node.right;
+    this[_name] = null;
 
     switch (node.type) {
     case esprima.Syntax.ArrowFunctionExpression:
       this[_kind] = "arrow";
-      node = node.params;
       break;
     case esprima.Syntax.ClassExpression:
       this[_kind] = "class";
+      if (node.id) {
+        assert(node.id.type === esprima.Syntax.Identifier);
+        this[_name] = node.id.name;
+      }
       node = node.body;
       assert(node.type === esprima.Syntax.ClassBody);
       node = node.body.find((method) => method.kind === "constructor");
       assert(node);
       node = node.value;
       assert(node.type === esprima.Syntax.FunctionExpression);
-      node = node.params;
       break;
     case esprima.Syntax.FunctionExpression:
       this[_kind] = "function";
-      node = node.params;
+      if (node.id) {
+        assert(node.id.type === esprima.Syntax.Identifier);
+        this[_name] = node.id.name;
+      }
       break;
     default:
       assert(false);
     }
 
-    this[_params] = node
-      .filter((param) => param.type === esprima.Syntax.Identifier)
-      .map((param) => param.name);
+    assert(node.params);
+    assert(node.defaults);
+
+    this[_params]   = [];
+    this[_defaults] = {};
+
+    node.params.forEach((param, index) => {
+      // istanbul ignore else because rest operator is only supported from
+      // node > 6.x (see the examples directory).
+      if (param.type === esprima.Syntax.Identifier) {
+        const name  = param.name;
+        const value = node.defaults[index];
+
+        this[_params].push(name);
+        // istanbul ignore if because function default values are only
+        // supported from node > 6.x (see the examples directory).
+        if (value) {
+          this[_defaults][param.name] = new Function(
+            `return ${escodegen.generate(value)};`
+          );
+        }
+      }
+    });
   }
 
   /**
@@ -81,12 +110,31 @@ const Scanner = class Scanner {
   }
 
   /**
+   * Returns the name of a functor (named class or named function) or null
+   * (unnamed class, unnamed function or arrow).
+   *
+   * @returns {?String} The functor name.
+   */
+  getName() {
+    return this[_name];
+  }
+
+  /**
    * Returns the functor injectable parameter names.
    *
    * @returns {String[]} The functor parameter names.
    */
   getParams() {
     return this[_params];
+  }
+
+  /**
+   * Returns the functor parameter default values.
+   *
+   * @returns {Object<String, Function>} The default value constructors.
+   */
+  getDefaults() {
+    return this[_defaults];
   }
 };
 
