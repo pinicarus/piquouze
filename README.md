@@ -4,10 +4,10 @@
 [nodejs](https://nodejs.org).
 
 [![NPM Summary](https://nodei.co/npm/piquouze.png)](https://www.npmjs.com/package/piquouze)
-
 [![NPM Downloads](https://nodei.co/npm-dl/piquouze.png?months=1)](https://www.npmjs.com/package/piquouze)
 
 [![Build Status](https://travis-ci.org/pinicarus/piquouze.svg?branch=master)](https://travis-ci.org/pinicarus/piquouze)
+[![Coverage Status](https://coveralls.io/repos/github/pinicarus/piquouze/badge.svg?branch=master)](https://coveralls.io/github/pinicarus/piquouze?branch=master)
 
 ## Features
 
