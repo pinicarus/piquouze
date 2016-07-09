@@ -14,6 +14,7 @@
 - Containers hierarchy
 - Registration of any first class value (including function and classes)
 - Injection of function and class constructors
+- Detection of contained factories names
 - Detection of dependencies from parameter names
 - Clean error on dependencies cycle
 - Extensible dependencies caching policies
