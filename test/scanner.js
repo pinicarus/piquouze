@@ -19,6 +19,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "arrow");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous function", function () {
@@ -27,6 +28,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "function");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named function", function () {
@@ -35,6 +37,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "function");
       assert.equal(scanner.getName(), "f");
       assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous class", function () {
@@ -43,6 +46,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous extending class", function () {
@@ -55,6 +59,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named class", function () {
@@ -63,6 +68,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), "C");
       assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named extending class", function () {
@@ -75,6 +81,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), "C");
       assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan class not starting with constructor", function () {
@@ -86,6 +93,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
   });
 
@@ -96,6 +104,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "arrow");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous arrow function w/ parenthesis", function () {
@@ -104,6 +113,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "arrow");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous function", function () {
@@ -112,6 +122,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "function");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named function", function () {
@@ -120,6 +131,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "function");
       assert.equal(scanner.getName(), "f");
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous class", function () {
@@ -128,6 +140,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous extending class", function () {
@@ -140,6 +153,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named class", function () {
@@ -148,6 +162,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), "C");
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named extending class", function () {
@@ -160,6 +175,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), "C");
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan class not starting with constructor", function () {
@@ -172,6 +188,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should not mistake constructor", function () {
@@ -188,6 +205,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
   });
 
@@ -198,6 +216,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "arrow");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous function", function () {
@@ -206,6 +225,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "function");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named function", function () {
@@ -214,6 +234,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "function");
       assert.equal(scanner.getName(), "f");
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous class", function () {
@@ -224,6 +245,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan anonymous extending class", function () {
@@ -236,6 +258,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named class", function () {
@@ -244,6 +267,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), "C");
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan named extending class", function () {
@@ -256,6 +280,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), "C");
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should scan class not starting with constructor", function () {
@@ -267,6 +292,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
 
     it("should not mistake constructor", function () {
@@ -283,6 +309,7 @@ describe("Scanner", function () {
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), null);
       assert.deepEqual(scanner.getParams(), ["a", "b"]);
+      assert.deepEqual(scanner.getDefaults(), {});
     });
   });
 

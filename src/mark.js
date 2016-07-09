@@ -14,17 +14,15 @@ const makeScanner = function (functor) {
 };
 
 /**
- * Marks a functor with the names of its injectable dependencies.
+ * Marks a functor with the names of its injectable properties.
  * @private
  *
  * @param {Function} functor - The functor to mark for injection.
  *
- * @returns {String[]}  The marked names of injectable parameters.
- * @throws  {ScanError} Whenever scanning of the functor failed.
+ * @throws {ScanError} Whenever scanning of the functor failed.
  */
 const mark = function mark(functor) {
   const scanner = makeScanner(functor);
-  let   inject  = functor.$inject;
 
   if (typeof functor.$kind !== "string") {
     functor.$kind = scanner().getKind();
@@ -36,10 +34,12 @@ const mark = function mark(functor) {
       functor.$name = name;
     }
   }
-  if (!(inject instanceof Array)) {
-    functor.$inject = inject = scanner().getParams();
+  if (!(functor.$inject instanceof Array)) {
+    functor.$inject = scanner().getParams();
   }
-  return inject;
+  if (!(functor.$defaults instanceof Object)) {
+    functor.$defaults = scanner().getDefaults();
+  }
 };
 
 module.exports = mark;
