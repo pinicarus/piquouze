@@ -7,7 +7,7 @@
     "doc": "jsdoc --destination doc --recurse src",
     "lint": "eslint . --ignore-path .gitignore",
     "unittest": "mocha --check-leaks --require ./alias --recursive test",
-    "unitcov": "istanbul cover --report lcovonly -- _mocha --reporter spec --check-leaks --require ./alias --recursive test",
+    "unitcov": "istanbul cover -x 'examples/**' --report lcovonly -- _mocha --reporter spec --check-leaks --require ./alias --recursive test",
     "test": "npm run unitcov",
     "posttest": "cat coverage/lcov.info | coveralls"
   },
