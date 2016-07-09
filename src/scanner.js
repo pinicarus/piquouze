@@ -13,6 +13,7 @@ const makeAssert = function makeAssert(functor) {
 };
 
 const _kind   = Symbol("kind");
+const _name   = Symbol("name");
 const _params = Symbol("params");
 
 /**
@@ -42,6 +43,7 @@ const Scanner = class Scanner {
     node = node.expression;
     assert(node.type === esprima.Syntax.AssignmentExpression);
     node = node.right;
+    this[_name] = null;
 
     switch (node.type) {
     case esprima.Syntax.ArrowFunctionExpression:
@@ -50,6 +52,10 @@ const Scanner = class Scanner {
       break;
     case esprima.Syntax.ClassExpression:
       this[_kind] = "class";
+      if (node.id) {
+        assert(node.id.type === esprima.Syntax.Identifier);
+        this[_name] = node.id.name;
+      }
       node = node.body;
       assert(node.type === esprima.Syntax.ClassBody);
       node = node.body.find((method) => method.kind === "constructor");
@@ -60,6 +66,10 @@ const Scanner = class Scanner {
       break;
     case esprima.Syntax.FunctionExpression:
       this[_kind] = "function";
+      if (node.id) {
+        assert(node.id.type === esprima.Syntax.Identifier);
+        this[_name] = node.id.name;
+      }
       node = node.params;
       break;
     default:
@@ -78,6 +88,16 @@ const Scanner = class Scanner {
    */
   getKind() {
     return this[_kind];
+  }
+
+  /**
+   * Returns the name of a functor (named class or named function) or null
+   * (unnamed class, unnamed function or arrow).
+   *
+   * @returns {?String} The functor name.
+   */
+  getName() {
+    return this[_name];
   }
 
   /**

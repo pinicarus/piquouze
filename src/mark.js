@@ -2,6 +2,17 @@
 
 const Scanner = require("./scanner");
 
+const makeScanner = function (functor) {
+  let scanner = null;
+
+  return () => {
+    if (!scanner) {
+      scanner = new Scanner(functor);
+    }
+    return scanner;
+  };
+};
+
 /**
  * Marks a functor with the names of its injectable dependencies.
  * @private
@@ -12,13 +23,21 @@ const Scanner = require("./scanner");
  * @throws  {ScanError} Whenever scanning of the functor failed.
  */
 const mark = function mark(functor) {
-  let inject = functor.$inject;
+  const scanner = makeScanner(functor);
+  let   inject  = functor.$inject;
 
+  if (typeof functor.$kind !== "string") {
+    functor.$kind = scanner().getKind();
+  }
+  if (typeof functor.$name !== "string") {
+    const name = scanner().getName();
+
+    if (name) {
+      functor.$name = name;
+    }
+  }
   if (!(inject instanceof Array)) {
-    const scanner = new Scanner(functor);
-
-    functor.$kind   = scanner.getKind();
-    functor.$inject = inject = scanner.getParams();
+    functor.$inject = inject = scanner().getParams();
   }
   return inject;
 };
