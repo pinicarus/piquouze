@@ -1,3 +1,8 @@
+# 1.1.0:
+
+  - Automatically detect name of factories (#3)
+  - Allow optional dependencies with injectable default value constructors (#4)
+
 # 1.0.4
 
   - Apply new operator on regular function expected to behave as prototype
