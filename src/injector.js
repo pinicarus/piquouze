@@ -101,8 +101,8 @@ const Injector = class Injector {
 
         return result instanceof Object
           || Object.getOwnPropertyNames(instance).length === 0
-					? result
-					: instance;
+          ? result
+          : instance;
       }
       default:
         return functor.apply(undefined, args);
