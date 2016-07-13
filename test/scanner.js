@@ -49,6 +49,15 @@ describe("Scanner", function () {
       assert.deepEqual(scanner.getDefaults(), {});
     });
 
+    it("should scan anonymous empty class", function () {
+      const scanner = new Scanner(class {});
+
+      assert.equal(scanner.getKind(), "class");
+      assert.equal(scanner.getName(), null);
+      assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
+    });
+
     it("should scan anonymous extending class", function () {
       const scanner = new Scanner(class extends _ {
         constructor() {
@@ -64,6 +73,15 @@ describe("Scanner", function () {
 
     it("should scan named class", function () {
       const scanner = new Scanner(class C {constructor() {}});
+
+      assert.equal(scanner.getKind(), "class");
+      assert.equal(scanner.getName(), "C");
+      assert.deepEqual(scanner.getParams(), []);
+      assert.deepEqual(scanner.getDefaults(), {});
+    });
+
+    it("should scan named empty class", function () {
+      const scanner = new Scanner(class C {});
 
       assert.equal(scanner.getKind(), "class");
       assert.equal(scanner.getName(), "C");
@@ -313,8 +331,10 @@ describe("Scanner", function () {
     });
   });
 
-  it("should fail to scan class with missing constructor", function () {
-    assert.throws(() => new Scanner(class {}), ScanError);
+  it("should fail to scan child class with missing constructor", function () {
+    const parent = class {};
+
+    assert.throws(() => new Scanner(class extends parent {}), ScanError);
   });
 
   it("should fail to scan non-functor", function () {
