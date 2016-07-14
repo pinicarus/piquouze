@@ -1,3 +1,7 @@
+# 1.2.0:
+
+  - Assume base classes w/o constructor have an empty one (#13)
+
 # 1.1.0:
 
   - Automatically detect name of factories (#3)
