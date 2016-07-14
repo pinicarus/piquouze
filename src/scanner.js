@@ -45,7 +45,9 @@ const Scanner = class Scanner {
     node = node.expression;
     assert(node.type === esprima.Syntax.AssignmentExpression);
     node = node.right;
-    this[_name] = null;
+    this[_name]     = null;
+    this[_params]   = [];
+    this[_defaults] = {};
 
     switch (node.type) {
     case esprima.Syntax.ArrowFunctionExpression:
@@ -57,9 +59,14 @@ const Scanner = class Scanner {
         assert(node.id.type === esprima.Syntax.Identifier);
         this[_name] = node.id.name;
       }
+      const superClass = node.superClass;
       node = node.body;
       assert(node.type === esprima.Syntax.ClassBody);
       node = node.body.find((method) => method.kind === "constructor");
+      if (!superClass && !node) {
+        // Assume a base class w/o constructor has an empty one.
+        return;
+      }
       assert(node);
       node = node.value;
       assert(node.type === esprima.Syntax.FunctionExpression);
@@ -77,9 +84,6 @@ const Scanner = class Scanner {
 
     assert(node.params);
     assert(node.defaults);
-
-    this[_params]   = [];
-    this[_defaults] = {};
 
     node.params.forEach((param, index) => {
       // istanbul ignore else because rest operator is only supported from
