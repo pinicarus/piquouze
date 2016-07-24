@@ -53,7 +53,7 @@ const Scanner = class Scanner {
     case esprima.Syntax.ArrowFunctionExpression:
       this[_kind] = "arrow";
       break;
-    case esprima.Syntax.ClassExpression:
+    case esprima.Syntax.ClassExpression: {
       this[_kind] = "class";
       if (node.id) {
         assert(node.id.type === esprima.Syntax.Identifier);
@@ -71,6 +71,7 @@ const Scanner = class Scanner {
       node = node.value;
       assert(node.type === esprima.Syntax.FunctionExpression);
       break;
+    }
     case esprima.Syntax.FunctionExpression:
       this[_kind] = "function";
       if (node.id) {
