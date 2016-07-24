@@ -1,3 +1,8 @@
+# 1.3.0:
+
+  - Allow injection with one-shot extra dependencies (#16)
+  - Fix injectability of (falsy) primitive values (#15)
+
 # 1.2.0:
 
   - Assume base classes w/o constructor have an empty one (#13)
