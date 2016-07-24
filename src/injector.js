@@ -61,7 +61,7 @@ const Injector = class Injector {
           const descriptor = container[name];
           const value      = descriptor.value;
 
-          if (!value.$inject) {
+          if (!(value instanceof Object) || !value.$inject) {
             this[_resolved][name] = value;
           } else {
             this[_killSwitch].enter(name);
