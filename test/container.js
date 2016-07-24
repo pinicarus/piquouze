@@ -114,6 +114,99 @@ describe("Container", function () {
     assert.equal(child.inject((b) => b)(), 4);
   });
 
+  it("should resolve undefined dependency", function () {
+    const container = new Container();
+
+    container.registerValue("a", undefined);
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), undefined);
+  });
+
+  it("should resolve null dependency", function () {
+    const container = new Container();
+
+    container.registerValue("a", null);
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), null);
+  });
+
+  it("should resolve false dependency", function () {
+    const container = new Container();
+
+    container.registerValue("a", false);
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), false);
+  });
+
+  it("should resolve true dependency", function () {
+    const container = new Container();
+
+    container.registerValue("a", true);
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), true);
+  });
+
+  it("should resolve number dependency", function () {
+    const container = new Container();
+
+    container.registerValue("a", 1);
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), 1);
+  });
+
+  it("should resolve symbol dependency", function () {
+    const container = new Container();
+    const symbol    = Symbol("a");
+
+    container.registerValue("a", symbol);
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), symbol);
+  });
+
+  it("should resolve string dependency", function () {
+    const container = new Container();
+
+    container.registerValue("a", "b");
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), "b");
+  });
+
+  it("should resolve date dependency", function () {
+    const container = new Container();
+    const now       = new Date();
+
+    container.registerValue("a", now);
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), now);
+  });
+
+  it("should resolve regexp dependency", function () {
+    const container = new Container();
+    const re        = /re/;
+
+    container.registerValue("a", re);
+
+    const functor = container.inject((a) => a);
+
+    assert.equal(functor(), re);
+  });
+
   it("should allow functions to return undefined", function () {
     const container = new Container();
     const functor   = container.inject(function () { return undefined; });
@@ -201,5 +294,16 @@ describe("Container", function () {
 
     assert(!(instance instanceof constructor));
     assert.deepEqual(instance, {b: 2});
+  });
+
+  it("should resolve with extra dependencies", function () {
+    const container = new Container();
+
+    container.registerValue("a", 1);
+
+    const functor = container.inject((a, b) => [a, b], {b: 2});
+
+    assert.deepEqual(functor(), [1, 2]);
+    assert.throws(() => container.inject((a, b) => [a, b]));
   });
 });

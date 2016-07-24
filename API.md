@@ -28,7 +28,7 @@ function or class.
     * [.createChild()](#Container+createChild) ⇒ <code>[Container](#Container)</code>
     * [.registerValue(name, value)](#Container+registerValue)
     * [.registerFactory([name], functor, [policy])](#Container+registerFactory)
-    * [.inject(functor)](#Container+inject) ⇒ <code>function</code>
+    * [.inject(functor, [values])](#Container+inject) ⇒ <code>function</code>
 
 <a name="new_Container_new"></a>
 
@@ -80,7 +80,7 @@ Register a factory value.
 
 <a name="Container+inject"></a>
 
-## container.inject(functor) ⇒ <code>function</code>
+## container.inject(functor, [values]) ⇒ <code>function</code>
 Inject a functor with registered values.
 
 **Kind**: instance method of <code>[Container](#Container)</code>  
@@ -93,6 +93,7 @@ Inject a functor with registered values.
 | Param | Type | Description |
 | --- | --- | --- |
 | functor | <code>function</code> | The functor to inject. |
+| [values] | <code>Object.&lt;String, \*&gt;</code> | Extra injectable dependencies. |
 
 <a name="Policy"></a>
 
