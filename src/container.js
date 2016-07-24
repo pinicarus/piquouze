@@ -64,7 +64,7 @@ const Container = class Container {
     const args = params(arguments, [
       {type: String, default: null},
       {type: Function},
-      {type: Policy,default: defaultPolicy},
+      {type: Policy, default: defaultPolicy},
     ], true);
 
     let   name    = args[0];
@@ -85,17 +85,30 @@ const Container = class Container {
   /**
    * Inject a functor with registered values.
    *
-   * @param {Function} functor - The functor to inject.
+   * @param {Function}          functor - The functor to inject.
+   * @param {Object<String, *>} values  - Extra dependencies use for injection.
    *
    * @returns {Function}  The injected functor.
    * @throws  {TypeError} Whenever the functor does not inherit from Function.
    */
-  inject(functor) {
+  inject() {
     const args = params(arguments, [
       {type: Function},
+      {type: Object, default: null},
     ], true);
 
-    return new Injector().inject(this[_container], args[0]);
+    let   container = this;
+    const functor   = args[0];
+    const values    = args[1];
+
+    if (values) {
+      container = container.createChild();
+      for (const key in values) {
+        container.registerValue(key, values[key]);
+      }
+    }
+
+    return new Injector().inject(container[_container], functor);
   }
 };
 
