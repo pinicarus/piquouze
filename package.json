@@ -6,11 +6,12 @@
   "scripts": {
     "doc": "jsdoc2md --heading-depth 1 --src src/**.js > API.md",
     "lint": "eslint . --ignore-path .gitignore",
-    "unittest": "mocha --check-leaks --require ./alias --recursive test",
-    "unitcov": "istanbul cover -x 'examples/**' --report lcovonly -- _mocha --reporter spec --check-leaks --require ./alias --recursive test",
+    "unittest": "mocha --opts ./.mocha.opts",
+    "unitcov": "istanbul cover -- _mocha --opts ./.mocha.opts",
+    "postunitcov": "istanbul check-coverage",
     "pretest": "npm run lint",
     "test": "npm run unitcov",
-    "posttest": "cat coverage/lcov.info | coveralls"
+    "posttest": "cat coverage/lcov.info | coveralls || true"
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,8 @@
   "homepage": "https://github.com/pinicarus/piquouze#readme",
   "dependencies": {
     "escodegen": "^1.8.0",
-    "esprima": "^2.7.2"
+    "esprima": "^2.7.2",
+    "facies": "^1.1.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.9",
