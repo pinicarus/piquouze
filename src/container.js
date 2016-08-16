@@ -1,10 +1,11 @@
 "use strict";
 
+const facies = require("facies");
+
 const Injector = require("./injector");
 const PerInjectionPolicy = require("./policies/per-injection");
 const Policy = require("./policy");
 const mark = require("./mark");
-const params = require("./params");
 
 const defaultPolicy = new PerInjectionPolicy();
 
@@ -19,15 +20,9 @@ const _container = Symbol("container");
 const Container = class Container {
   /**
    * Constructs a new container.
-   *
-   * @param {Container=} parent - The parent container.
    */
-  constructor(parent) {
-    const args = params(arguments, [
-      {type: Container, default: {[_container]: null}},
-    ], true);
-
-    this[_container] = Object.setPrototypeOf({}, args[0][_container]);
+  constructor() {
+    this[_container] = {};
   }
 
   /**
@@ -36,7 +31,10 @@ const Container = class Container {
    * @returns {Container} A new child container.
    */
   createChild() {
-    return new Container(this);
+    const child = new Container();
+
+    Object.setPrototypeOf(child[_container], this[_container]);
+    return child;
   }
 
   /**
@@ -46,6 +44,10 @@ const Container = class Container {
    * @param {*}      value - The actual value.
    */
   registerValue(name, value) {
+    facies.match(arguments, [
+      new facies.TypeDefinition(String),
+    ], false);
+
     this[_container][name] = {value};
   }
 
@@ -61,10 +63,10 @@ const Container = class Container {
    * @throws {TypeError} Whenever no name was given and none could be inferred.
    */
   registerFactory() {
-    const args = params(arguments, [
-      {type: String, default: null},
-      {type: Function},
-      {type: Policy, default: defaultPolicy},
+    const args = facies.match(arguments, [
+      new facies.TypeDefinition(String, null),
+      new facies.TypeDefinition(Function),
+      new facies.TypeDefinition(Policy, defaultPolicy),
     ], true);
 
     let   name    = args[0];
@@ -92,9 +94,9 @@ const Container = class Container {
    * @throws  {TypeError} Whenever the functor does not inherit from Function.
    */
   inject() {
-    const args = params(arguments, [
-      {type: Function},
-      {type: Object, default: null},
+    const args = facies.match(arguments, [
+      new facies.TypeDefinition(Function),
+      new facies.TypeDefinition(Object, null),
     ], true);
 
     let   container = this;
