@@ -1,3 +1,8 @@
+# 2.0.0:
+
+  - Migrate parameter checking to facies (#20)
+  - Remove container constructor parameter
+
 # 1.3.0:
 
   - Allow injection with one-shot extra dependencies (#16)
