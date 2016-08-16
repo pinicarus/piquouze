@@ -24,7 +24,7 @@ function or class.
 **Kind**: global class  
 
 * [Container](#Container)
-    * [new Container([parent])](#new_Container_new)
+    * [new Container()](#new_Container_new)
     * [.createChild()](#Container+createChild) ⇒ <code>[Container](#Container)</code>
     * [.registerValue(name, value)](#Container+registerValue)
     * [.registerFactory([name], functor, [policy])](#Container+registerFactory)
@@ -32,13 +32,8 @@ function or class.
 
 <a name="new_Container_new"></a>
 
-## new Container([parent])
+## new Container()
 Constructs a new container.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [parent] | <code>[Container](#Container)</code> | The parent container. |
 
 <a name="Container+createChild"></a>
 
