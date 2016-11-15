@@ -35,7 +35,7 @@ const Container = class Container {
    * Constructs a new container.
    */
   constructor() {
-    this[_container] = {};
+    this[_container] = Object.setPrototypeOf({}, null);
   }
 
   /**
@@ -137,6 +137,25 @@ const Container = class Container {
   getOwnEntries() {
     return {
       [Symbol.iterator]: () => getEntriesIterator(this[_container]),
+    };
+  }
+
+  /**
+   * Returns an iterable of [key, value] entries registered explicitely on the
+   * container.
+   *
+   * @returns {Iterable} An iterable object over the entries of values
+   * explicitely registered on the container.
+   */
+  getEntries() {
+    return {
+      [Symbol.iterator]: function* () {
+        for(let container = this[_container];
+            container !== null;
+            container = Object.getPrototypeOf(container)) {
+          yield* getEntriesIterator(container);
+        }
+      }.bind(this),
     };
   }
 };

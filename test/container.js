@@ -339,6 +339,20 @@ describe("Container", function () {
       assert.deepEqual([["c", 3], ["d", 4]], collect(child.getOwnEntries()));
     });
 
+    it("should iterate over all entries", function () {
+      const parent = new Container();
+      parent.registerValue("a", 1);
+      parent.registerValue("b", 2);
+
+      const child  = parent.createChild();
+      child.registerValue("c", 3);
+      child.registerValue("d", 4);
+
+      assert.deepEqual([["a", 1], ["b", 2]], collect(parent.getEntries()));
+      assert.deepEqual([["a", 1], ["b", 2], ["c", 3], ["d", 4]],
+        collect(child.getEntries()));
+    });
+
     it("should return reference entry values", function () {
       const reference = {};
       const container = new Container();
