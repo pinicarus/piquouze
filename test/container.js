@@ -306,4 +306,53 @@ describe("Container", function () {
     assert.deepEqual(functor(), [1, 2]);
     assert.throws(() => container.inject((a, b) => [a, b]));
   });
+
+  describe("iteration", function () {
+    const collect = (iterable) => {
+      let entries = [];
+
+      for(const entry of iterable) {
+        entries.push(entry);
+      }
+      return entries.sort((entryA, entryB) => {
+        const keyA = entryA[0];
+        const keyB = entryB[0];
+
+        switch (true) {
+        case keyA < keyB: return -1;
+        case keyA > keyB: return 1;
+        default: return 0;
+        }
+      });
+    };
+
+    it("should iterate over own entries", function () {
+      const parent = new Container();
+      parent.registerValue("a", 1);
+      parent.registerValue("b", 2);
+
+      const child  = parent.createChild();
+      child.registerValue("c", 3);
+      child.registerValue("d", 4);
+
+      assert.deepEqual([["a", 1], ["b", 2]], collect(parent.getOwnEntries()));
+      assert.deepEqual([["c", 3], ["d", 4]], collect(child.getOwnEntries()));
+    });
+
+    it("should return reference entry values", function () {
+      const reference = {};
+      const container = new Container();
+
+      container.registerValue("a", reference);
+      assert.strictEqual(reference, collect(container.getOwnEntries())[0][1]);
+    });
+
+    it("should return factory entries", function () {
+      const functor   = function f(){};
+      const container = new Container();
+
+      container.registerFactory(functor);
+      assert.deepEqual([["f", functor]], collect(container.getOwnEntries()));
+    });
+  });
 });
