@@ -184,3 +184,22 @@ container.registerFactory("name", functor);
 
 Functors injected at the container level can have default values for their
 dependencies as well.
+
+## Iterables
+
+You can iterate over the values registered either on a single container:
+
+```javascript
+for(entry of container.getOwnEntries()) {
+}
+```
+
+or on a container and all of its parentship hierarchy:
+
+```javascript
+for(entry of container.getEntries()) {
+}
+```
+
+Entries are arrays with two values: the first element is the name under which the
+value was registered and the second element is the value registered.
