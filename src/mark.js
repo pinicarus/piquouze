@@ -1,5 +1,14 @@
 "use strict";
 
+/**
+ * @type {Object} Marking - The result of marking a functor.
+ * @private
+ * @property {String} kind     - The functor kind.
+ * @property {String} name     - The functor name.
+ * @property {Array}  inject   - The functor dependencies to inject.
+ * @property {Object} defaults - Dependencies default values.
+ */
+
 const Scanner = require("./scanner");
 
 const makeScanner = function (functor) {
@@ -13,33 +22,40 @@ const makeScanner = function (functor) {
   };
 };
 
+const markings = new WeakMap();
+
 /**
  * Marks a functor with the names of its injectable properties.
  * @private
  *
  * @param {Function} functor - The functor to mark for injection.
  *
- * @throws {ScanError} Whenever scanning of the functor failed.
+ * @returns {Marking}  The functor marking result.
+ * @throws  {ScanError} Whenever scanning of the functor failed.
  */
 const mark = function mark(functor) {
-  const scanner = makeScanner(functor);
+  let marking = markings.get(functor);
 
-  if (typeof functor.$kind !== "string") {
-    functor.$kind = scanner().getKind();
-  }
-  if (typeof functor.$name !== "string") {
-    const name = scanner().getName();
+  if (!marking) {
+    const scanner = makeScanner(functor);
 
-    if (name) {
-      functor.$name = name;
-    }
+    marking = {
+      kind: typeof functor.$kind === "string" && functor.$kind
+            ? functor.$kind
+            : scanner().getKind(),
+      name: typeof functor.$name === "string" && functor.$name
+            ? functor.$name
+            : scanner().getName(),
+      inject: functor.$inject instanceof Array
+              ? functor.$inject
+              : scanner().getParams(),
+      defaults: functor.$defaults instanceof Object
+                ? functor.$defaults
+                : scanner().getDefaults(),
+    };
+    markings.set(functor, marking);
   }
-  if (!(functor.$inject instanceof Array)) {
-    functor.$inject = scanner().getParams();
-  }
-  if (!(functor.$defaults instanceof Object)) {
-    functor.$defaults = scanner().getDefaults();
-  }
+  return marking;
 };
 
 module.exports = mark;

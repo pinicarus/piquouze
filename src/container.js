@@ -72,15 +72,16 @@ const Container = class Container {
     let   name    = args[0];
     const functor = args[1];
     const policy  = args[2];
+    const marking = mark(functor);
 
-    mark(functor);
-    name = name || functor.$name;
+    name = name || marking.name;
     if (!name) {
       throw new TypeError("Missing functor name");
     }
     this[_container][name] = {
-      value:  functor,
-      policy: policy,
+      marking: marking,
+      value:   functor,
+      policy:  policy,
     };
   }
 
