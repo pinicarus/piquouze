@@ -40,16 +40,16 @@ const Injector = class Injector {
    * @throws  {MissingDependencyError} Whenever a dependency is not resolvable.
    */
   inject(container, functor) {
-    mark(functor);
+    const marking = mark(functor);
 
-    const dependencies = functor.$inject.map((name) => {
+    const dependencies = marking.inject.map((name) => {
       if (!this[_resolved].hasOwnProperty(name)) {
         if (!(name in container)) {
-          if (!(name in functor.$defaults)) {
+          if (!(name in marking.defaults)) {
             throw new MissingDependencyError(name);
           }
 
-          let dependency = functor.$defaults[name];
+          let dependency = marking.defaults[name];
 
           if (dependency instanceof Function) {
             this[_killSwitch].enter(name);
@@ -61,7 +61,7 @@ const Injector = class Injector {
           const descriptor = container[name];
           const value      = descriptor.value;
 
-          if (!(value instanceof Object) || !value.$inject) {
+          if (!(value instanceof Object) || !descriptor.marking) {
             this[_resolved][name] = value;
           } else {
             this[_killSwitch].enter(name);
@@ -89,7 +89,7 @@ const Injector = class Injector {
     return function () {
       const args = dependencies.concat(Array.from(arguments));
 
-      switch (functor.$kind) {
+      switch (marking.kind) {
       case "class": {
         const bound = functor.bind.apply(functor, [undefined].concat(args));
 
