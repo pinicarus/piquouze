@@ -1,11 +1,24 @@
 "use strict";
 
+/**
+ * @typedef {Object} Iterable - An iterable object
+ * @property {Function} @@iterator - The function returning an iterator over
+ * the iterable.
+ */
+
 const facies = require("facies");
 
 const Injector = require("./injector");
 const PerInjectionPolicy = require("./policies/per-injection");
 const Policy = require("./policy");
 const mark = require("./mark");
+
+const getEntriesIterator = function (container) {
+  const values = Object.keys(container)
+    .map((key) => [key, container[key].value]);
+
+  return values[Symbol.iterator]();
+};
 
 const defaultPolicy = new PerInjectionPolicy();
 
@@ -22,7 +35,7 @@ const Container = class Container {
    * Constructs a new container.
    */
   constructor() {
-    this[_container] = {};
+    this[_container] = Object.setPrototypeOf({}, null);
   }
 
   /**
@@ -72,15 +85,16 @@ const Container = class Container {
     let   name    = args[0];
     const functor = args[1];
     const policy  = args[2];
+    const marking = mark(functor);
 
-    mark(functor);
-    name = name || functor.$name;
+    name = name || marking.name;
     if (!name) {
       throw new TypeError("Missing functor name");
     }
     this[_container][name] = {
-      value:  functor,
-      policy: policy,
+      marking: marking,
+      value:   functor,
+      policy:  policy,
     };
   }
 
@@ -111,6 +125,38 @@ const Container = class Container {
     }
 
     return new Injector().inject(container[_container], functor);
+  }
+
+  /**
+   * Returns an iterable of [key, value] entries registered explicitely on the
+   * container.
+   *
+   * @returns {Iterable} An iterable object over the entries of values
+   * explicitely registered on the container.
+   */
+  getOwnEntries() {
+    return {
+      [Symbol.iterator]: () => getEntriesIterator(this[_container]),
+    };
+  }
+
+  /**
+   * Returns an iterable of [key, value] entries registered explicitely on the
+   * container.
+   *
+   * @returns {Iterable} An iterable object over the entries of values
+   * explicitely registered on the container.
+   */
+  getEntries() {
+    return {
+      [Symbol.iterator]: function* () {
+        for(let container = this[_container];
+            container !== null;
+            container = Object.getPrototypeOf(container)) {
+          yield* getEntriesIterator(container);
+        }
+      }.bind(this),
+    };
   }
 };
 

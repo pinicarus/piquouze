@@ -313,11 +313,18 @@ describe("Injector", function () {
   });
 
   it("should inject factory dependency", function () {
+    const marking = {
+      kind:     "arrow",
+      inject:   ["a"],
+      defaults: {},
+    };
+
     const container = {
       a: {value: 1},
       b: {
-        value:  mark(["a"], {}, (a) => [a]),
-        policy: new NeverPolicy(),
+        marking: marking,
+        value:   mark(marking.inject, marking.defaults, (a) => [a]),
+        policy:  new NeverPolicy(),
       },
     };
 
