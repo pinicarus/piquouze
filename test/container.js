@@ -307,6 +307,45 @@ describe("Container", function () {
     assert.throws(() => container.inject((a, b) => [a, b]));
   });
 
+  it("should merge containers hierarchies", function () {
+    const parentA = new Container();
+
+    const parentB = new Container();
+    parentB.registerValue("b", 1);
+
+    const parentC = new Container();
+    parentC.registerValue("c", 2);
+    parentC.registerValue("cc", 22);
+
+    const parentD = new Container();
+    parentD.registerValue("d", 3);
+
+    const childD = parentD.createChild();
+    childD.registerValue("dd", 33);
+
+    const child = Container.merge(parentA, parentB, parentC, childD);
+    child.registerValue("e", 4);
+
+    const functor = child.inject((b, c, cc, d, dd, e) => [b, c, cc, d, dd, e]);
+
+    assert.deepEqual(functor(), [1, 2, 22, 3, 33, 4]);
+  });
+
+  it("should merge into independent container", function () {
+    const parent = new Container();
+    parent.registerValue("a", 1);
+
+    const child = Container.merge(parent);
+
+    const functor = (a, b) => [a, b];
+
+    assert.throws(() => child.inject(functor));
+    parent.registerValue("b", 2);
+    assert.throws(() => child.inject(functor));
+    child.registerValue("b", 2);
+    assert.deepEqual(child.inject(functor)(), [1, 2]);
+  });
+
   describe("iteration", function () {
     const collect = (iterable) => {
       let entries = [];
