@@ -335,8 +335,14 @@ describe("Container", function () {
       child.registerValue("c", 3);
       child.registerValue("d", 4);
 
-      assert.deepEqual([["a", 1], ["b", 2]], collect(parent.getOwnEntries()));
-      assert.deepEqual([["c", 3], ["d", 4]], collect(child.getOwnEntries()));
+      assert.deepEqual([
+        ["a", 1, "value"],
+        ["b", 2, "value"],
+      ], collect(parent.getOwnEntries()));
+      assert.deepEqual([
+        ["c", 3, "value"],
+        ["d", 4, "value"],
+      ], collect(child.getOwnEntries()));
     });
 
     it("should iterate over all entries", function () {
@@ -348,9 +354,16 @@ describe("Container", function () {
       child.registerValue("c", 3);
       child.registerValue("d", 4);
 
-      assert.deepEqual([["a", 1], ["b", 2]], collect(parent.getEntries()));
-      assert.deepEqual([["a", 1], ["b", 2], ["c", 3], ["d", 4]],
-        collect(child.getEntries()));
+      assert.deepEqual([
+        ["a", 1, "value"],
+        ["b", 2, "value"],
+      ], collect(parent.getEntries()));
+      assert.deepEqual([
+        ["a", 1, "value"],
+        ["b", 2, "value"],
+        ["c", 3, "value"],
+        ["d", 4, "value"],
+      ], collect(child.getEntries()));
     });
 
     it("should return reference entry values", function () {
@@ -366,7 +379,9 @@ describe("Container", function () {
       const container = new Container();
 
       container.registerFactory(functor);
-      assert.deepEqual([["f", functor]], collect(container.getOwnEntries()));
+      assert.deepEqual([
+        ["f", functor, "factory"],
+      ], collect(container.getOwnEntries()));
     });
   });
 });
