@@ -1,3 +1,11 @@
+# 3.1.1:
+  - Allow container hierarchies to be merged (#29)
+  - Expose registration type in iterable entries (#28)
+
+# 3.0.0:
+  - Allow iterations over containers content (#24)
+  - Suppress in-place functors marking (#23)
+
 # 2.0.0:
 
   - Migrate parameter checking to facies (#20)
