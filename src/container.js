@@ -14,8 +14,11 @@ const Policy = require("./policy");
 const mark = require("./mark");
 
 const getEntriesIterator = function (container) {
-  const values = Object.keys(container)
-    .map((key) => [key, container[key].value]);
+  const values = Object.keys(container).map((key) => [
+    key,
+    container[key].value,
+    container[key].marking ? "factory" : "value",
+  ]);
 
   return values[Symbol.iterator]();
 };

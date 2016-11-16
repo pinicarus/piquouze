@@ -201,5 +201,8 @@ for(entry of container.getEntries()) {
 }
 ```
 
-Entries are arrays with two values: the first element is the name under which the
-value was registered and the second element is the value registered.
+Entries are arrays with three values:
+  - the first element is the name under which the value was registered
+  - the second element is the value registered
+  - the third element is the type of registration performed (either `"factory"`
+    or `"value"`)
