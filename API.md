@@ -33,12 +33,15 @@ function or class.
 
 * [Container](#Container)
     * [new Container()](#new_Container_new)
-    * [.createChild()](#Container+createChild) ⇒ <code>[Container](#Container)</code>
-    * [.registerValue(name, value)](#Container+registerValue)
-    * [.registerFactory([name], functor, [policy])](#Container+registerFactory)
-    * [.inject(functor, [values])](#Container+inject) ⇒ <code>function</code>
-    * [.getOwnEntries()](#Container+getOwnEntries) ⇒ <code>[Iterable](#Iterable)</code>
-    * [.getEntries()](#Container+getEntries) ⇒ <code>[Iterable](#Iterable)</code>
+    * _instance_
+        * [.createChild()](#Container+createChild) ⇒ <code>[Container](#Container)</code>
+        * [.registerValue(name, value)](#Container+registerValue)
+        * [.registerFactory([name], functor, [policy])](#Container+registerFactory)
+        * [.inject(functor, [values])](#Container+inject) ⇒ <code>function</code>
+        * [.getOwnEntries()](#Container+getOwnEntries) ⇒ <code>[Iterable](#Iterable)</code>
+        * [.getEntries()](#Container+getEntries) ⇒ <code>[Iterable](#Iterable)</code>
+    * _static_
+        * [.merge(...containers)](#Container.merge) ⇒ <code>[Container](#Container)</code>
 
 <a name="new_Container_new"></a>
 
@@ -118,6 +121,18 @@ container.
 **Kind**: instance method of <code>[Container](#Container)</code>  
 **Returns**: <code>[Iterable](#Iterable)</code> - An iterable object over the entries of values
 explicitely registered on the container.  
+<a name="Container.merge"></a>
+
+## Container.merge(...containers) ⇒ <code>[Container](#Container)</code>
+Merge multiple container hierarchies.
+
+**Kind**: static method of <code>[Container](#Container)</code>  
+**Returns**: <code>[Container](#Container)</code> - The merged containers.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| ...containers | <code>[Container](#Container)</code> | The list of containers to merge. |
+
 <a name="Policy"></a>
 
 # Policy

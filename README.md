@@ -185,6 +185,18 @@ container.registerFactory("name", functor);
 Functors injected at the container level can have default values for their
 dependencies as well.
 
+## Merging
+
+Containers can be merged into a independent container:
+
+```javascript
+container = Container.merge(containerA, containerB, ...);
+```
+
+All values and factories registered in the merged containers are available in
+the result container. However changes on these containers after the merge will
+have no effect on the result container.
+
 ## Iterables
 
 You can iterate over the values registered either on a single container:
