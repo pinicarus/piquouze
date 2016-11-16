@@ -13,6 +13,14 @@ Children classes must re-implement the `getValue&#39; method.</p>
 </dd>
 </dl>
 
+# Typedefs
+
+<dl>
+<dt><a href="#Iterable">Iterable</a> : <code>Object</code></dt>
+<dd><p>An iterable object</p>
+</dd>
+</dl>
+
 <a name="Container"></a>
 
 # Container
@@ -29,6 +37,8 @@ function or class.
     * [.registerValue(name, value)](#Container+registerValue)
     * [.registerFactory([name], functor, [policy])](#Container+registerFactory)
     * [.inject(functor, [values])](#Container+inject) ⇒ <code>function</code>
+    * [.getOwnEntries()](#Container+getOwnEntries) ⇒ <code>[Iterable](#Iterable)</code>
+    * [.getEntries()](#Container+getEntries) ⇒ <code>[Iterable](#Iterable)</code>
 
 <a name="new_Container_new"></a>
 
@@ -90,6 +100,24 @@ Inject a functor with registered values.
 | functor | <code>function</code> | The functor to inject. |
 | [values] | <code>Object.&lt;String, \*&gt;</code> | Extra injectable dependencies. |
 
+<a name="Container+getOwnEntries"></a>
+
+## container.getOwnEntries() ⇒ <code>[Iterable](#Iterable)</code>
+Returns an iterable of [key, value] entries registered explicitely on the
+container.
+
+**Kind**: instance method of <code>[Container](#Container)</code>  
+**Returns**: <code>[Iterable](#Iterable)</code> - An iterable object over the entries of values
+explicitely registered on the container.  
+<a name="Container+getEntries"></a>
+
+## container.getEntries() ⇒ <code>[Iterable](#Iterable)</code>
+Returns an iterable of [key, value] entries registered explicitely on the
+container.
+
+**Kind**: instance method of <code>[Container](#Container)</code>  
+**Returns**: <code>[Iterable](#Iterable)</code> - An iterable object over the entries of values
+explicitely registered on the container.  
 <a name="Policy"></a>
 
 # Policy
@@ -112,4 +140,16 @@ Returns a (possibly cached) value from the factory.
 | --- | --- | --- |
 | context | <code>Context</code> | The injection context. |
 | factory | <code>function</code> | The injected factory. |
+
+<a name="Iterable"></a>
+
+# Iterable : <code>Object</code>
+An iterable object
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| @@iterator | <code>function</code> | The function returning an iterator over the iterable. |
 
