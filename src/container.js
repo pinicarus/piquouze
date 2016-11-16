@@ -54,6 +54,46 @@ const Container = class Container {
   }
 
   /**
+   * Merge multiple container hierarchies.
+   *
+   * @param {...Container} containers - The list of containers to merge.
+   *
+   * @returns {Container} The merged containers.
+   */
+  static merge() {
+    let args = facies.match(arguments, [
+      new facies.TypeDefinition(Container, null, arguments.length),
+    ], true);
+
+    if (arguments.length > 1) {
+      args = args[0];
+    }
+
+    const child = new Container();
+    let   next  = child[_container];
+
+    for(let values = args
+          .filter((container) => container !== null)
+          .map((container) => container[_container]);
+        values.length > 0;
+        values = values.reduce((parents, value) => {
+          const parent = Object.getPrototypeOf(value);
+
+          if (parent !== null) {
+            parents.push(parent);
+          }
+          return parents;
+        }, [])) {
+      const merged = Object.assign.apply(undefined, [{}].concat(values));
+
+      Object.setPrototypeOf(next, merged);
+      next = merged;
+    }
+    Object.setPrototypeOf(next, null);
+    return child;
+  }
+
+  /**
    * Register a value as a first-class item.
    *
    * @param {String} name  - The name of the value.
