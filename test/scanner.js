@@ -113,6 +113,16 @@ describe("Scanner", function () {
 			assert.deepEqual(scanner.getParams(), []);
 			assert.deepEqual(scanner.getDefaults(), {});
 		});
+
+		it("should scan class method", function () {
+			const C = class { f() {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.getKind(), "method");
+			assert.equal(scanner.getName(), "f");
+			assert.deepEqual(scanner.getParams(), []);
+			assert.deepEqual(scanner.getDefaults(), {});
+		});
 	});
 
 	describe("with 1 parameter", function () {
@@ -225,6 +235,16 @@ describe("Scanner", function () {
 			assert.deepEqual(scanner.getParams(), ["a"]);
 			assert.deepEqual(scanner.getDefaults(), {});
 		});
+
+		it("should scan class method", function () {
+			const C = class { f(a) {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.getKind(), "method");
+			assert.equal(scanner.getName(), "f");
+			assert.deepEqual(scanner.getParams(), ["a"]);
+			assert.deepEqual(scanner.getDefaults(), {});
+		});
 	});
 
 	describe("with 2 parameters", function () {
@@ -326,6 +346,16 @@ describe("Scanner", function () {
 
 			assert.equal(scanner.getKind(), "class");
 			assert.equal(scanner.getName(), null);
+			assert.deepEqual(scanner.getParams(), ["a", "b"]);
+			assert.deepEqual(scanner.getDefaults(), {});
+		});
+
+		it("should scan class method", function () {
+			const C = class { f(a, b) {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.getKind(), "method");
+			assert.equal(scanner.getName(), "f");
 			assert.deepEqual(scanner.getParams(), ["a", "b"]);
 			assert.deepEqual(scanner.getDefaults(), {});
 		});
@@ -433,6 +463,16 @@ describe("Scanner", function () {
 			assert.deepEqual(scanner.getParams(), ["a", "b"]);
 			assert.deepEqual(scanner.getDefaults(), {});
 		});
+
+		it("should scan class method", function () {
+			const C = class { f(a, b, ...args) {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.getKind(), "method");
+			assert.equal(scanner.getName(), "f");
+			assert.deepEqual(scanner.getParams(), ["a", "b"]);
+			assert.deepEqual(scanner.getDefaults(), {});
+		});
 	});
 
 	describe("with default value parameter", function () {
@@ -534,6 +574,16 @@ describe("Scanner", function () {
 
 			assert.equal(scanner.getKind(), "class");
 			assert.equal(scanner.getName(), null);
+			assert.deepEqual(scanner.getParams(), ["a", "b"]);
+			assert.deepEqual(Object.keys(scanner.getDefaults()), ["b"]);
+		});
+
+		it("should scan class method", function () {
+			const C = class { f(a, b = 1) {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.getKind(), "method");
+			assert.equal(scanner.getName(), "f");
 			assert.deepEqual(scanner.getParams(), ["a", "b"]);
 			assert.deepEqual(Object.keys(scanner.getDefaults()), ["b"]);
 		});

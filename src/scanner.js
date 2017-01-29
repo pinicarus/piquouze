@@ -13,6 +13,47 @@ const makeAssert = function makeAssert(functor) {
 	};
 };
 
+const parse = function parse(assert, functor) {
+	let node, kind;
+
+	try {
+		node = esprima.parse(`_ = ${functor.toString()}`, {
+			sourceType: "string",
+		});
+	} catch (_) {
+		node = esprima.parse(`_ = function ${functor.toString()}`, {
+			sourceType: "string",
+		});
+		kind = "method";
+	}
+
+	assert(node);
+	assert(node.type === esprima.Syntax.Program);
+	node = node.body;
+	assert(node.length === 1);
+	node = node[0];
+	assert(node.type === esprima.Syntax.ExpressionStatement);
+	node = node.expression;
+	assert(node.type === esprima.Syntax.AssignmentExpression);
+	node = node.right;
+	switch (node.type) {
+		case esprima.Syntax.ArrowFunctionExpression:
+			kind = "arrow";
+			break;
+		case esprima.Syntax.ClassExpression:
+			kind = "class";
+			break;
+		case esprima.Syntax.FunctionExpression:
+			if (!kind) {
+				kind = "function";
+			}
+			break;
+		default:
+			assert(false);
+	}
+	return [node, kind];
+};
+
 const _kind     = Symbol("kind");
 const _name     = Symbol("name");
 const _params   = Symbol("params");
@@ -31,30 +72,16 @@ const Scanner = class Scanner {
 	 * @throws {ScanError} Whenever scanning of the functor fails.
 	 */
 	constructor(functor) {
-		const assert = makeAssert(functor);
-		let   node   = esprima.parse(`_ = ${functor.toString()}`, {
-			sourceType: "module",
-		});
+		const assert     = makeAssert(functor);
+		let [node, kind] = parse(assert, functor);
 
-		assert(node);
-		assert(node.type === esprima.Syntax.Program);
-		node = node.body;
-		assert(node.length === 1);
-		node = node[0];
-		assert(node.type === esprima.Syntax.ExpressionStatement);
-		node = node.expression;
-		assert(node.type === esprima.Syntax.AssignmentExpression);
-		node = node.right;
+		this[_kind]     = kind;
 		this[_name]     = null;
 		this[_params]   = [];
 		this[_defaults] = {};
 
-		switch (node.type) {
-			case esprima.Syntax.ArrowFunctionExpression:
-				this[_kind] = "arrow";
-				break;
-			case esprima.Syntax.ClassExpression: {
-				this[_kind] = "class";
+		switch (kind) {
+			case "class": {
 				if (node.id) {
 					assert(node.id.type === esprima.Syntax.Identifier);
 					this[_name] = node.id.name;
@@ -72,15 +99,13 @@ const Scanner = class Scanner {
 				assert(node.type === esprima.Syntax.FunctionExpression);
 				break;
 			}
-			case esprima.Syntax.FunctionExpression:
-				this[_kind] = "function";
+			case "function":
+			case "method":
 				if (node.id) {
 					assert(node.id.type === esprima.Syntax.Identifier);
 					this[_name] = node.id.name;
 				}
 				break;
-			default:
-				assert(false);
 		}
 
 		assert(node.params);

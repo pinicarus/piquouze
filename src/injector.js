@@ -17,6 +17,30 @@ const _resolved   = Symbol("resolved");
  * @property {String} name      - The name of the injected factory.
  */
 
+const injectable = function injectable(dependencies, marking, functor) {
+	// A function is returned so that it can be rebound afterwards.
+	return function (...extra) {
+		const args = dependencies.concat(extra);
+
+		switch (marking.kind) {
+			case "arrow":
+				return functor.apply(undefined, args);
+			case "class": {
+				const bound = functor.bind(...[undefined].concat(args));
+
+				return new bound();
+			}
+		}
+
+		const instance = this || Object.create(functor.prototype);
+		const result   = functor.apply(instance, args);
+
+		return result instanceof Object || Object.getOwnPropertyNames(instance).length === 0
+			? result
+			: instance;
+	};
+};
+
 /**
  * An injection handler.
  * @private
@@ -68,17 +92,16 @@ const Injector = class Injector {
 						const factory = this.inject(container, value);
 						this[_killSwitch].exit();
 
-						const policy  = descriptor.policy;
 						const context = {
-							container: container,
-							injector:  this,
-							name:      name,
+							container,
+							injector: this,
+							name,
 						};
 
 						Object.defineProperty(this[_resolved], name, {
 							enumerable:   true,
 							configurable: false,
-							get:          () => policy.getValue(context, factory),
+							get:          () => descriptor.policy.getValue(context, factory),
 						});
 					}
 				}
@@ -86,27 +109,7 @@ const Injector = class Injector {
 			return this[_resolved][name];
 		});
 
-		return function (...extra) {
-			const args = dependencies.concat(extra);
-
-			switch (marking.kind) {
-				case "class": {
-					const bound = functor.bind.apply(functor, [undefined].concat(args));
-
-					return new bound();
-				}
-				case "function": {
-					const instance = Object.create(functor.prototype);
-					const result   = functor.apply(instance, args);
-
-					return result instanceof Object || Object.getOwnPropertyNames(instance).length === 0
-						? result
-						: instance;
-				}
-				default:
-					return functor.apply(undefined, args);
-			}
-		};
+		return injectable(dependencies, marking, functor);
 	}
 };
 

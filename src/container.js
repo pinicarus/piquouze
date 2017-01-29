@@ -134,8 +134,8 @@ const Container = class Container {
 	/**
 	 * Inject a functor with registered values.
 	 *
-	 * @param {Function}          functor  - The functor to inject.
-	 * @param {Object<String, *>} [values] - Extra injectable dependencies.
+	 * @param {Function}          functor   - The functor to inject.
+	 * @param {Object<String, *>} [values]  - Extra injectable dependencies.
 	 *
 	 * @returns {Function}  The injected functor.
 	 * @throws  {TypeError} Whenever the functor does not inherit from Function.
