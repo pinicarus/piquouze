@@ -11,15 +11,22 @@
 
 const Scanner = require("./scanner");
 
-const makeScanner = function (functor) {
-  let scanner = null;
+/**
+ * Returns a constructor to lazy-create a scanner.
+ * @private
+ *
+ * @param {Function} functor - The functor to scan for injection.
+ * @returns {Function} A function returning a scanner.
+ */
+const makeScanner = function makeScanner (functor) {
+	let scanner = null;
 
-  return () => {
-    if (!scanner) {
-      scanner = new Scanner(functor);
-    }
-    return scanner;
-  };
+	return () => {
+		if (!scanner) {
+			scanner = new Scanner(functor);
+		}
+		return scanner;
+	};
 };
 
 const markings = new WeakMap();
@@ -34,28 +41,20 @@ const markings = new WeakMap();
  * @throws  {ScanError} Whenever scanning of the functor failed.
  */
 const mark = function mark(functor) {
-  let marking = markings.get(functor);
+	let marking = markings.get(functor);
 
-  if (!marking) {
-    const scanner = makeScanner(functor);
+	if (!marking) {
+		const scanner = makeScanner(functor);
 
-    marking = {
-      kind: typeof functor.$kind === "string" && functor.$kind
-            ? functor.$kind
-            : scanner().getKind(),
-      name: typeof functor.$name === "string" && functor.$name
-            ? functor.$name
-            : scanner().getName(),
-      inject: functor.$inject instanceof Array
-              ? functor.$inject
-              : scanner().getParams(),
-      defaults: functor.$defaults instanceof Object
-                ? functor.$defaults
-                : scanner().getDefaults(),
-    };
-    markings.set(functor, marking);
-  }
-  return marking;
+		marking = {
+			kind:     typeof functor.$kind === "string" && functor.$kind ? functor.$kind     : scanner().getKind(),
+			name:     typeof functor.$name === "string" && functor.$name ? functor.$name     : scanner().getName(),
+			inject:   functor.$inject instanceof Array                   ? functor.$inject   : scanner().getParams(),
+			defaults: functor.$defaults instanceof Object                ? functor.$defaults : scanner().getDefaults(),
+		};
+		markings.set(functor, marking);
+	}
+	return marking;
 };
 
 module.exports = mark;

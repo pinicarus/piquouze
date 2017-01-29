@@ -13,7 +13,9 @@
 
 - Containers hierarchy
 - Registration of any first class value (including function and classes)
-- Injection of function and class constructors
+- Injection of function (arrow and regular)
+- Injection of class constructors and methods
+- Injection of generators
 - Detection of contained factories names
 - Detection of dependencies from parameter names
 - Fallback to parameters default values

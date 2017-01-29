@@ -17,98 +17,100 @@ const _resolved   = Symbol("resolved");
  * @property {String} name      - The name of the injected factory.
  */
 
+const injectable = function injectable(dependencies, marking, functor) {
+	// A function is returned so that it can be rebound afterwards.
+	return function (...extra) {
+		const args = dependencies.concat(extra);
+
+		switch (marking.kind) {
+			case "arrow":
+				return functor.apply(undefined, args);
+			case "class": {
+				const bound = functor.bind(...[undefined].concat(args));
+
+				return new bound();
+			}
+		}
+
+		const instance = this || Object.create(functor.prototype);
+		const result   = functor.apply(instance, args);
+
+		return result instanceof Object || Object.getOwnPropertyNames(instance).length === 0
+			? result
+			: instance;
+	};
+};
+
 /**
  * An injection handler.
  * @private
  */
 const Injector = class Injector {
-  /**
-   * Constructs a new injector.
-   */
-  constructor() {
-    this[_killSwitch] = new KillSwitch();
-    this[_resolved]   = {};
-  }
+	/**
+	 * Constructs a new injector.
+	 */
+	constructor() {
+		this[_killSwitch] = new KillSwitch();
+		this[_resolved]   = {};
+	}
 
-  /**
-   * Injects a functor based on dependencies from a container.
-   *
-   * @param {Object}   container - A dependencies container.
-   * @param {Function} functor   - The functor to inject.
-   *
-   * @returns {Function}               The injected functor.
-   * @throws  {MissingDependencyError} Whenever a dependency is not resolvable.
-   */
-  inject(container, functor) {
-    const marking = mark(functor);
+	/**
+	 * Injects a functor based on dependencies from a container.
+	 *
+	 * @param {Object}   container - A dependencies container.
+	 * @param {Function} functor   - The functor to inject.
+	 *
+	 * @returns {Function}               The injected functor.
+	 * @throws  {MissingDependencyError} Whenever a dependency is not resolvable.
+	 */
+	inject(container, functor) {
+		const marking = mark(functor);
 
-    const dependencies = marking.inject.map((name) => {
-      if (!this[_resolved].hasOwnProperty(name)) {
-        if (!(name in container)) {
-          if (!(name in marking.defaults)) {
-            throw new MissingDependencyError(name);
-          }
+		const dependencies = marking.inject.map((name) => {
+			if (!this[_resolved].hasOwnProperty(name)) {
+				if (!(name in container)) {
+					if (!(name in marking.defaults)) {
+						throw new MissingDependencyError(name);
+					}
 
-          let dependency = marking.defaults[name];
+					let dependency = marking.defaults[name];
 
-          if (dependency instanceof Function) {
-            this[_killSwitch].enter(name);
-            dependency = this.inject(container, dependency)();
-            this[_killSwitch].exit();
-          }
-          this[_resolved][name] = dependency;
-        } else {
-          const descriptor = container[name];
-          const value      = descriptor.value;
+					if (dependency instanceof Function) {
+						this[_killSwitch].enter(name);
+						dependency = this.inject(container, dependency)();
+						this[_killSwitch].exit();
+					}
+					this[_resolved][name] = dependency;
+				} else {
+					const descriptor = container[name];
+					const value      = descriptor.value;
 
-          if (!(value instanceof Object) || !descriptor.marking) {
-            this[_resolved][name] = value;
-          } else {
-            this[_killSwitch].enter(name);
-            const factory = this.inject(container, value);
-            this[_killSwitch].exit();
+					if (!(value instanceof Object) || !descriptor.marking) {
+						this[_resolved][name] = value;
+					} else {
+						this[_killSwitch].enter(name);
+						const factory = this.inject(container, value);
+						this[_killSwitch].exit();
 
-            const policy  = descriptor.policy;
-            const context = {
-              container: container,
-              injector:  this,
-              name:      name,
-            };
+						const context = {
+							container,
+							injector: this,
+							name,
+						};
 
-            Object.defineProperty(this[_resolved], name, {
-              enumerable:   true,
-              configurable: false,
-              get:          () => policy.getValue(context, factory),
-            });
-          }
-        }
-      }
-      return this[_resolved][name];
-    });
+						Object.defineProperty(this[_resolved], name, {
+							enumerable:   true,
+							configurable: false,
+							get:          () => descriptor.policy.getValue(context, factory),
+						});
+					}
+				}
+			}
+			return this[_resolved][name];
+		});
 
-    return function () {
-      const args = dependencies.concat(Array.from(arguments));
-
-      switch (marking.kind) {
-      case "class": {
-        const bound = functor.bind.apply(functor, [undefined].concat(args));
-
-        return new bound();
-      }
-      case "function": {
-        const instance = Object.create(functor.prototype);
-        const result   = functor.apply(instance, args);
-
-        return result instanceof Object
-          || Object.getOwnPropertyNames(instance).length === 0
-          ? result
-          : instance;
-      }
-      default:
-        return functor.apply(undefined, args);
-      }
-    };
-  }
+		return injectable(dependencies, marking, functor);
+	}
 };
 
 module.exports = Injector;
