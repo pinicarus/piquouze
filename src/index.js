@@ -1,19 +1,19 @@
 "use strict";
 
 module.exports = Object.freeze({
-  Container: require("./container"),
+	Container: require("./container"),
 
-  caching: Object.freeze({
-    Always:       require("./policies/always"),
-    PerContainer: require("./policies/per-container"),
-    PerInjection: require("./policies/per-injection"),
-    Never:        require("./policies/never"),
-  }),
+	caching: Object.freeze({
+		Always:       require("./policies/always"),
+		PerContainer: require("./policies/per-container"),
+		PerInjection: require("./policies/per-injection"),
+		Never:        require("./policies/never"),
+	}),
 
-  errors: Object.freeze({
-    Cycle:             require("./errors/cycle"),
-    MissingDependency: require("./errors/missing"),
-    NotImplemented:    require("./errors/not-implemented"),
-    Scan:              require("./errors/scan"),
-  }),
+	errors: Object.freeze({
+		Cycle:             require("./errors/cycle"),
+		MissingDependency: require("./errors/missing"),
+		NotImplemented:    require("./errors/not-implemented"),
+		Scan:              require("./errors/scan"),
+	}),
 });

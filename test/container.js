@@ -7,420 +7,420 @@ const NeverPolicy        = requireSrc("policies", "never");
 const PerInjectionPolicy = requireSrc("policies", "per-injection");
 
 describe("Container", function () {
-  const mark = (inject, functor) => {
-    functor.$inject = inject;
-    return functor;
-  };
+	const mark = (inject, functor) => {
+		functor.$inject = inject;
+		return functor;
+	};
 
-  it("should conform", function () {
-    assert(Container instanceof Function);
-  });
+	it("should conform", function () {
+		assert(Container instanceof Function);
+	});
 
-  it("should check registerFactory functor type", function () {
-    const container = new Container();
+	it("should check registerFactory functor type", function () {
+		const container = new Container();
 
-    assert.throws(() => container.registerFactory("a", "b"), TypeError);
-  });
+		assert.throws(() => container.registerFactory("a", "b"), TypeError);
+	});
 
-  it("should check registerFactory policy type", function () {
-    const container = new Container();
+	it("should check registerFactory policy type", function () {
+		const container = new Container();
 
-    container.registerFactory("a", () => {});
-    container.registerFactory("a", () => {}, new NeverPolicy());
-    assert.throws(() => container.registerFactory("a", () => {}, 1), TypeError);
-  });
+		container.registerFactory("a", () => {});
+		container.registerFactory("a", () => {}, new NeverPolicy());
+		assert.throws(() => container.registerFactory("a", () => {}, 1), TypeError);
+	});
 
-  it("should check inject functor type", function () {
-    const container = new Container();
+	it("should check inject functor type", function () {
+		const container = new Container();
 
-    assert.throws(() => container.inject("a"), TypeError);
-  });
+		assert.throws(() => container.inject("a"), TypeError);
+	});
 
-  it("should allow registry of named factories", function () {
-    const container = new Container();
+	it("should allow registry of named factories", function () {
+		const container = new Container();
 
-    container.registerFactory(function f () { return 1; });
-    container.registerFactory(function g () { return 2; }, new NeverPolicy());
-    container.registerFactory("h", function x () { return 3; });
+		container.registerFactory(function f () { return 1; });
+		container.registerFactory(function g () { return 2; }, new NeverPolicy());
+		container.registerFactory("h", function x () { return 3; });
 
-    const values = container.inject((f, g, h) => [f, g, h]);
+		const values = container.inject((f, g, h) => [f, g, h]);
 
-    assert.deepEqual(values(), [1, 2, 3]);
-  });
+		assert.deepEqual(values(), [1, 2, 3]);
+	});
 
-  it("should fail to register anonymous factories w/o name", function () {
-    const container = new Container();
+	it("should fail to register anonymous factories w/o name", function () {
+		const container = new Container();
 
-    assert.throws(() => container.registerFactory(() => {}), TypeError);
-  });
+		assert.throws(() => container.registerFactory(() => {}), TypeError);
+	});
 
-  it("should allow policy sharing", function () {
-    const container = new Container();
-    const policy    = new PerInjectionPolicy();
+	it("should allow policy sharing", function () {
+		const container = new Container();
+		const policy    = new PerInjectionPolicy();
 
-    container.registerFactory("a", () => ({}), policy);
-    container.registerFactory("x", () => ({}), policy);
+		container.registerFactory("a", () => ({}), policy);
+		container.registerFactory("x", () => ({}), policy);
 
-    const functor = mark(["a", "a", "x", "x"], (a, b, c, d) => [a, b, c, d]);
-    const values1 = container.inject(functor)();
+		const functor = mark(["a", "a", "x", "x"], (a, b, c, d) => [a, b, c, d]);
+		const values1 = container.inject(functor)();
 
-    assert(values1[0] === values1[1]);
-    assert(values1[0] !== values1[2]);
-    assert(values1[0] !== values1[3]);
-    assert(values1[2] === values1[3]);
+		assert(values1[0] === values1[1]);
+		assert(values1[0] !== values1[2]);
+		assert(values1[0] !== values1[3]);
+		assert(values1[2] === values1[3]);
 
-    const values2 = container.inject(functor)();
+		const values2 = container.inject(functor)();
 
-    assert(values2[0] === values2[1]);
-    assert(values2[0] !== values2[2]);
-    assert(values2[0] !== values2[3]);
-    assert(values2[2] === values2[3]);
+		assert(values2[0] === values2[1]);
+		assert(values2[0] !== values2[2]);
+		assert(values2[0] !== values2[3]);
+		assert(values2[2] === values2[3]);
 
-    assert(values1[0] !== values2[0]);
-    assert(values1[2] !== values2[0]);
-    assert(values1[2] !== values2[2]);
-  });
+		assert(values1[0] !== values2[0]);
+		assert(values1[2] !== values2[0]);
+		assert(values1[2] !== values2[2]);
+	});
 
-  it("should create child container", function () {
-    const container = new Container();
+	it("should create child container", function () {
+		const container = new Container();
 
-    assert(container instanceof Container);
-    assert(container.createChild() instanceof Container);
-  });
+		assert(container instanceof Container);
+		assert(container.createChild() instanceof Container);
+	});
 
-  it("should resolve dependencies", function () {
-    const container = new Container();
+	it("should resolve dependencies", function () {
+		const container = new Container();
 
-    container.registerValue("a", 1);
-    container.registerValue("b", (a) => a * 2);
-    container.registerFactory("c", (a, b) => b(a));
+		container.registerValue("a", 1);
+		container.registerValue("b", (a) => a * 2);
+		container.registerFactory("c", (a, b) => b(a));
 
-    const functor = container.inject((c) => c);
+		const functor = container.inject((c) => c);
 
-    assert(functor instanceof Function);
-    assert.equal(functor(), 2);
-  });
+		assert(functor instanceof Function);
+		assert.equal(functor(), 2);
+	});
 
-  it("should resolve dependencies hierarchy", function () {
-    const parent = new Container();
-    const child  = parent.createChild();
+	it("should resolve dependencies hierarchy", function () {
+		const parent = new Container();
+		const child  = parent.createChild();
 
-    parent.registerValue("a", 1);
-    parent.registerFactory("b", (a) => a * 2);
+		parent.registerValue("a", 1);
+		parent.registerFactory("b", (a) => a * 2);
 
-    child.registerValue("a", 2);
+		child.registerValue("a", 2);
 
-    assert.equal(parent.inject((b) => b)(), 2);
-    assert.equal(child.inject((b) => b)(), 4);
-  });
+		assert.equal(parent.inject((b) => b)(), 2);
+		assert.equal(child.inject((b) => b)(), 4);
+	});
 
-  it("should resolve undefined dependency", function () {
-    const container = new Container();
+	it("should resolve undefined dependency", function () {
+		const container = new Container();
 
-    container.registerValue("a", undefined);
+		container.registerValue("a", undefined);
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), undefined);
-  });
+		assert.equal(functor(), undefined);
+	});
 
-  it("should resolve null dependency", function () {
-    const container = new Container();
+	it("should resolve null dependency", function () {
+		const container = new Container();
 
-    container.registerValue("a", null);
+		container.registerValue("a", null);
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), null);
-  });
+		assert.equal(functor(), null);
+	});
 
-  it("should resolve false dependency", function () {
-    const container = new Container();
+	it("should resolve false dependency", function () {
+		const container = new Container();
 
-    container.registerValue("a", false);
+		container.registerValue("a", false);
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), false);
-  });
+		assert.equal(functor(), false);
+	});
 
-  it("should resolve true dependency", function () {
-    const container = new Container();
+	it("should resolve true dependency", function () {
+		const container = new Container();
 
-    container.registerValue("a", true);
+		container.registerValue("a", true);
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), true);
-  });
+		assert.equal(functor(), true);
+	});
 
-  it("should resolve number dependency", function () {
-    const container = new Container();
+	it("should resolve number dependency", function () {
+		const container = new Container();
 
-    container.registerValue("a", 1);
+		container.registerValue("a", 1);
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), 1);
-  });
+		assert.equal(functor(), 1);
+	});
 
-  it("should resolve symbol dependency", function () {
-    const container = new Container();
-    const symbol    = Symbol("a");
+	it("should resolve symbol dependency", function () {
+		const container = new Container();
+		const symbol    = Symbol("a");
 
-    container.registerValue("a", symbol);
+		container.registerValue("a", symbol);
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), symbol);
-  });
+		assert.equal(functor(), symbol);
+	});
 
-  it("should resolve string dependency", function () {
-    const container = new Container();
+	it("should resolve string dependency", function () {
+		const container = new Container();
 
-    container.registerValue("a", "b");
+		container.registerValue("a", "b");
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), "b");
-  });
+		assert.equal(functor(), "b");
+	});
 
-  it("should resolve date dependency", function () {
-    const container = new Container();
-    const now       = new Date();
+	it("should resolve date dependency", function () {
+		const container = new Container();
+		const now       = new Date();
 
-    container.registerValue("a", now);
+		container.registerValue("a", now);
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), now);
-  });
+		assert.equal(functor(), now);
+	});
 
-  it("should resolve regexp dependency", function () {
-    const container = new Container();
-    const re        = /re/;
+	it("should resolve regexp dependency", function () {
+		const container = new Container();
+		const re        = /re/;
 
-    container.registerValue("a", re);
+		container.registerValue("a", re);
 
-    const functor = container.inject((a) => a);
+		const functor = container.inject((a) => a);
 
-    assert.equal(functor(), re);
-  });
+		assert.equal(functor(), re);
+	});
 
-  it("should allow functions to return undefined", function () {
-    const container = new Container();
-    const functor   = container.inject(function () { return undefined; });
+	it("should allow functions to return undefined", function () {
+		const container = new Container();
+		const functor   = container.inject(function () { return undefined; });
 
-    assert.equal(functor(), undefined);
-  });
+		assert.equal(functor(), undefined);
+	});
 
-  it("should allow functions to return null", function () {
-    const container = new Container();
-    const functor   = container.inject(function () { return null; });
+	it("should allow functions to return null", function () {
+		const container = new Container();
+		const functor   = container.inject(function () { return null; });
 
-    assert.equal(functor(), null);
-  });
+		assert.equal(functor(), null);
+	});
 
-  it("should allow functions to return false", function () {
-    const container = new Container();
-    const functor   = container.inject(function () { return false; });
+	it("should allow functions to return false", function () {
+		const container = new Container();
+		const functor   = container.inject(function () { return false; });
 
-    assert.equal(functor(), false);
-  });
+		assert.equal(functor(), false);
+	});
 
-  it("should allow functions to return true", function () {
-    const container = new Container();
-    const functor   = container.inject(function () { return true; });
+	it("should allow functions to return true", function () {
+		const container = new Container();
+		const functor   = container.inject(function () { return true; });
 
-    assert.equal(functor(), true);
-  });
+		assert.equal(functor(), true);
+	});
 
-  it("should allow functions to return number", function () {
-    const container = new Container();
-    const functor   = container.inject(function () { return 1; });
+	it("should allow functions to return number", function () {
+		const container = new Container();
+		const functor   = container.inject(function () { return 1; });
 
-    assert.equal(functor(), 1);
-  });
+		assert.equal(functor(), 1);
+	});
 
-  it("should allow functions to return string", function () {
-    const container = new Container();
-    const functor   = container.inject(function () { return "foo"; });
+	it("should allow functions to return string", function () {
+		const container = new Container();
+		const functor   = container.inject(function () { return "foo"; });
 
-    assert.equal(functor(), "foo");
-  });
+		assert.equal(functor(), "foo");
+	});
 
-  it("should allow functions to be constructors", function () {
-    const constructor = function () { this.a = 1; };
-    const container   = new Container();
-    const functor     = container.inject(constructor);
-    const instance    = functor();
+	it("should allow functions to be constructors", function () {
+		const constructor = function () { this.a = 1; };
+		const container   = new Container();
+		const functor     = container.inject(constructor);
+		const instance    = functor();
 
-    assert(instance instanceof constructor);
-    assert.equal(instance.a, 1);
-  });
+		assert(instance instanceof constructor);
+		assert.equal(instance.a, 1);
+	});
 
-  it("should allow functions to be constructors returning this", function () {
-    const constructor = function () { return this; };
-    const container   = new Container();
-    const functor     = container.inject(constructor);
-    const instance    = functor();
+	it("should allow functions to be constructors returning this", function () {
+		const constructor = function () { return this; };
+		const container   = new Container();
+		const functor     = container.inject(constructor);
+		const instance    = functor();
 
-    assert(instance instanceof constructor);
-  });
+		assert(instance instanceof constructor);
+	});
 
-  it("should allow functions to be constructors returning value", function () {
-    const constructor = function () {
-      this.a = 1;
-      return "foo";
-    };
+	it("should allow functions to be constructors returning value", function () {
+		const constructor = function () {
+			this.a = 1;
+			return "foo";
+		};
 
-    const container = new Container();
-    const functor   = container.inject(constructor);
-    const instance  = functor();
+		const container = new Container();
+		const functor   = container.inject(constructor);
+		const instance  = functor();
 
-    assert(instance instanceof constructor);
-    assert.equal(instance.a, 1);
-  });
+		assert(instance instanceof constructor);
+		assert.equal(instance.a, 1);
+	});
 
-  it("should allow functions to be use this and return object", function () {
-    const constructor = function () {
-      this.a = 1;
-      return {b: 2};
-    };
+	it("should allow functions to be use this and return object", function () {
+		const constructor = function () {
+			this.a = 1;
+			return {b: 2};
+		};
 
-    const container = new Container();
-    const functor   = container.inject(constructor);
-    const instance  = functor();
+		const container = new Container();
+		const functor   = container.inject(constructor);
+		const instance  = functor();
 
-    assert(!(instance instanceof constructor));
-    assert.deepEqual(instance, {b: 2});
-  });
+		assert(!(instance instanceof constructor));
+		assert.deepEqual(instance, {b: 2});
+	});
 
-  it("should resolve with extra dependencies", function () {
-    const container = new Container();
+	it("should resolve with extra dependencies", function () {
+		const container = new Container();
 
-    container.registerValue("a", 1);
+		container.registerValue("a", 1);
 
-    const functor = container.inject((a, b) => [a, b], {b: 2});
+		const functor = container.inject((a, b) => [a, b], {b: 2});
 
-    assert.deepEqual(functor(), [1, 2]);
-    assert.throws(() => container.inject((a, b) => [a, b]));
-  });
+		assert.deepEqual(functor(), [1, 2]);
+		assert.throws(() => container.inject((a, b) => [a, b]));
+	});
 
-  it("should merge containers hierarchies", function () {
-    const parentA = new Container();
+	it("should merge containers hierarchies", function () {
+		const parentA = new Container();
 
-    const parentB = new Container();
-    parentB.registerValue("b", 1);
+		const parentB = new Container();
+		parentB.registerValue("b", 1);
 
-    const parentC = new Container();
-    parentC.registerValue("c", 2);
-    parentC.registerValue("cc", 22);
+		const parentC = new Container();
+		parentC.registerValue("c", 2);
+		parentC.registerValue("cc", 22);
 
-    const parentD = new Container();
-    parentD.registerValue("d", 3);
+		const parentD = new Container();
+		parentD.registerValue("d", 3);
 
-    const childD = parentD.createChild();
-    childD.registerValue("dd", 33);
+		const childD = parentD.createChild();
+		childD.registerValue("dd", 33);
 
-    const child = Container.merge(parentA, parentB, parentC, childD);
-    child.registerValue("e", 4);
+		const child = Container.merge(parentA, parentB, parentC, childD);
+		child.registerValue("e", 4);
 
-    const functor = child.inject((b, c, cc, d, dd, e) => [b, c, cc, d, dd, e]);
+		const functor = child.inject((b, c, cc, d, dd, e) => [b, c, cc, d, dd, e]);
 
-    assert.deepEqual(functor(), [1, 2, 22, 3, 33, 4]);
-  });
+		assert.deepEqual(functor(), [1, 2, 22, 3, 33, 4]);
+	});
 
-  it("should merge into independent container", function () {
-    const parent = new Container();
-    parent.registerValue("a", 1);
+	it("should merge into independent container", function () {
+		const parent = new Container();
+		parent.registerValue("a", 1);
 
-    const child = Container.merge(parent);
+		const child = Container.merge(parent);
 
-    const functor = (a, b) => [a, b];
+		const functor = (a, b) => [a, b];
 
-    assert.throws(() => child.inject(functor));
-    parent.registerValue("b", 2);
-    assert.throws(() => child.inject(functor));
-    child.registerValue("b", 2);
-    assert.deepEqual(child.inject(functor)(), [1, 2]);
-  });
+		assert.throws(() => child.inject(functor));
+		parent.registerValue("b", 2);
+		assert.throws(() => child.inject(functor));
+		child.registerValue("b", 2);
+		assert.deepEqual(child.inject(functor)(), [1, 2]);
+	});
 
-  describe("iteration", function () {
-    const collect = (iterable) => {
-      let entries = [];
+	describe("iteration", function () {
+		const collect = (iterable) => {
+			let entries = [];
 
-      for(const entry of iterable) {
-        entries.push(entry);
-      }
-      return entries.sort((entryA, entryB) => {
-        const keyA = entryA[0];
-        const keyB = entryB[0];
+			for(const entry of iterable) {
+				entries.push(entry);
+			}
+			return entries.sort((entryA, entryB) => {
+				const keyA = entryA[0];
+				const keyB = entryB[0];
 
-        switch (true) {
-        case keyA < keyB: return -1;
-        case keyA > keyB: return 1;
-        default: return 0;
-        }
-      });
-    };
+				switch (true) {
+					case keyA < keyB: return -1;
+					case keyA > keyB: return 1;
+					default: return 0;
+				}
+			});
+		};
 
-    it("should iterate over own entries", function () {
-      const parent = new Container();
-      parent.registerValue("a", 1);
-      parent.registerValue("b", 2);
+		it("should iterate over own entries", function () {
+			const parent = new Container();
+			parent.registerValue("a", 1);
+			parent.registerValue("b", 2);
 
-      const child  = parent.createChild();
-      child.registerValue("c", 3);
-      child.registerValue("d", 4);
+			const child  = parent.createChild();
+			child.registerValue("c", 3);
+			child.registerValue("d", 4);
 
-      assert.deepEqual([
-        ["a", 1, "value"],
-        ["b", 2, "value"],
-      ], collect(parent.getOwnEntries()));
-      assert.deepEqual([
-        ["c", 3, "value"],
-        ["d", 4, "value"],
-      ], collect(child.getOwnEntries()));
-    });
+			assert.deepEqual([
+				["a", 1, "value"],
+				["b", 2, "value"],
+			], collect(parent.getOwnEntries()));
+			assert.deepEqual([
+				["c", 3, "value"],
+				["d", 4, "value"],
+			], collect(child.getOwnEntries()));
+		});
 
-    it("should iterate over all entries", function () {
-      const parent = new Container();
-      parent.registerValue("a", 1);
-      parent.registerValue("b", 2);
+		it("should iterate over all entries", function () {
+			const parent = new Container();
+			parent.registerValue("a", 1);
+			parent.registerValue("b", 2);
 
-      const child  = parent.createChild();
-      child.registerValue("c", 3);
-      child.registerValue("d", 4);
+			const child  = parent.createChild();
+			child.registerValue("c", 3);
+			child.registerValue("d", 4);
 
-      assert.deepEqual([
-        ["a", 1, "value"],
-        ["b", 2, "value"],
-      ], collect(parent.getEntries()));
-      assert.deepEqual([
-        ["a", 1, "value"],
-        ["b", 2, "value"],
-        ["c", 3, "value"],
-        ["d", 4, "value"],
-      ], collect(child.getEntries()));
-    });
+			assert.deepEqual([
+				["a", 1, "value"],
+				["b", 2, "value"],
+			], collect(parent.getEntries()));
+			assert.deepEqual([
+				["a", 1, "value"],
+				["b", 2, "value"],
+				["c", 3, "value"],
+				["d", 4, "value"],
+			], collect(child.getEntries()));
+		});
 
-    it("should return reference entry values", function () {
-      const reference = {};
-      const container = new Container();
+		it("should return reference entry values", function () {
+			const reference = {};
+			const container = new Container();
 
-      container.registerValue("a", reference);
-      assert.strictEqual(reference, collect(container.getOwnEntries())[0][1]);
-    });
+			container.registerValue("a", reference);
+			assert.strictEqual(reference, collect(container.getOwnEntries())[0][1]);
+		});
 
-    it("should return factory entries", function () {
-      const functor   = function f(){};
-      const container = new Container();
+		it("should return factory entries", function () {
+			const functor   = function f(){};
+			const container = new Container();
 
-      container.registerFactory(functor);
-      assert.deepEqual([
-        ["f", functor, "factory"],
-      ], collect(container.getOwnEntries()));
-    });
-  });
+			container.registerFactory(functor);
+			assert.deepEqual([
+				["f", functor, "factory"],
+			], collect(container.getOwnEntries()));
+		});
+	});
 });
