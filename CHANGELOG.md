@@ -1,3 +1,10 @@
+# 4.0.1:
+  - Migrate to facies 2.x
+
+# 4.0.0:
+  - Drop Node 4.x support (#33)
+  - Allow post-injection binding
+
 # 3.1.1:
   - Allow container hierarchies to be merged (#29)
   - Expose registration type in iterable entries (#28)
