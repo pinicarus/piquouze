@@ -6,7 +6,10 @@
  * the iterable.
  */
 
-const facies = require("facies");
+const {
+	TypeDefinition,
+	match,
+} = require("facies");
 
 const Injector = require("./injector");
 const PerInjectionPolicy = require("./policies/per-injection");
@@ -61,8 +64,8 @@ const Container = class Container {
 	 * @returns {Container} The merged containers.
 	 */
 	static merge(...containers) {
-		facies.match(containers, [
-			new facies.TypeDefinition(Container, null, containers.length),
+		match(containers, [
+			new TypeDefinition(Container, null, containers.length),
 		], true);
 
 		const child = new Container();
@@ -94,8 +97,8 @@ const Container = class Container {
 	 * @param {*}      value - The actual value.
 	 */
 	registerValue(name, value) {
-		facies.match(arguments, [
-			new facies.TypeDefinition(String),
+		match(arguments, [
+			new TypeDefinition(String),
 		], false);
 
 		this[_container][name] = {value};
@@ -113,10 +116,10 @@ const Container = class Container {
 	* @throws {TypeError} Whenever no name was given and none could be inferred.
 	*/
 	registerFactory() {
-		let [name, value, policy] = facies.match(arguments, [
-			new facies.TypeDefinition(String, null),
-			new facies.TypeDefinition(Function),
-			new facies.TypeDefinition(Policy, defaultPolicy),
+		let [name, value, policy] = match(arguments, [
+			new TypeDefinition(String, null),
+			new TypeDefinition(Function),
+			new TypeDefinition(Policy, defaultPolicy),
 		], true);
 		const marking = mark(value);
 
@@ -141,9 +144,9 @@ const Container = class Container {
 	 * @throws  {TypeError} Whenever the functor does not inherit from Function.
 	 */
 	inject() {
-		const [functor, values] = facies.match(arguments, [
-			new facies.TypeDefinition(Function),
-			new facies.TypeDefinition(Object, null),
+		const [functor, values] = match(arguments, [
+			new TypeDefinition(Function),
+			new TypeDefinition(Object, null),
 		], true);
 		let container = this;
 
