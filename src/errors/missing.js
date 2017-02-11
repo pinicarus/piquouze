@@ -1,6 +1,11 @@
 "use strict";
 
-const _name = Symbol("name");
+/**
+ * Storage for internal properties of MissingDependencyError instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * An error representing a missing dependency.
@@ -13,7 +18,9 @@ const MissingDependencyError = class MissingDependencyError extends Error {
 	 */
 	constructor(name) {
 		super(`Missing dependency: ${name}`);
-		this[_name] = name;
+		properties.set(this, {
+			name,
+		});
 	}
 
 	/**
@@ -22,7 +29,7 @@ const MissingDependencyError = class MissingDependencyError extends Error {
 	 * @returns {String} The name of the missing dependency.
 	 */
 	get name() {
-		return this[_name];
+		return properties.get(this).name;
 	}
 };
 

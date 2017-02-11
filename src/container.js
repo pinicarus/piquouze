@@ -28,7 +28,12 @@ const getEntriesIterator = function (container) {
 
 const defaultPolicy = new PerInjectionPolicy();
 
-const _container = Symbol("container");
+/**
+ * Storage for internal properties of Container instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * A dependency container.
@@ -41,7 +46,7 @@ const Container = class Container {
 	 * Constructs a new container.
 	 */
 	constructor() {
-		this[_container] = Object.setPrototypeOf({}, null);
+		properties.set(this, Object.setPrototypeOf({}, null));
 	}
 
 	/**
@@ -52,7 +57,7 @@ const Container = class Container {
 	createChild() {
 		const child = new Container();
 
-		Object.setPrototypeOf(child[_container], this[_container]);
+		Object.setPrototypeOf(properties.get(child), properties.get(this));
 		return child;
 	}
 
@@ -69,9 +74,10 @@ const Container = class Container {
 		], true);
 
 		const child = new Container();
-		let   next  = child[_container];
+		let   next  = properties.get(child);
 
-		for(let values = containers.filter((container) => container !== null).map((container) => container[_container]);
+		for(let values = containers.filter((container) => container !== null)
+			                        .map((container) => properties.get(container));
 			 values.length > 0;
 			 values = values.reduce((parents, value) => {
 				const parent = Object.getPrototypeOf(value);
@@ -101,7 +107,7 @@ const Container = class Container {
 			new TypeDefinition(String),
 		], false);
 
-		this[_container][name] = {value};
+		properties.get(this)[name] = {value};
 	}
 
 	/**
@@ -127,7 +133,7 @@ const Container = class Container {
 		if (!name) {
 			throw new TypeError("Missing functor name");
 		}
-		this[_container][name] = {
+		properties.get(this)[name] = {
 			marking,
 			value,
 			policy,
@@ -157,7 +163,7 @@ const Container = class Container {
 			}
 		}
 
-		return new Injector().inject(container[_container], functor);
+		return new Injector().inject(properties.get(container), functor);
 	}
 
 	/**
@@ -169,7 +175,7 @@ const Container = class Container {
 	 */
 	getOwnEntries() {
 		return {
-			[Symbol.iterator]: () => getEntriesIterator(this[_container]),
+			[Symbol.iterator]: () => getEntriesIterator(properties.get(this)),
 		};
 	}
 
@@ -183,9 +189,9 @@ const Container = class Container {
 	getEntries() {
 		return {
 			[Symbol.iterator]: function* () {
-				for(let container = this[_container];
-					container !== null;
-					container = Object.getPrototypeOf(container)) {
+				for(let container = properties.get(this);
+					 container !== null;
+					 container = Object.getPrototypeOf(container)) {
 					yield* getEntriesIterator(container);
 				}
 			}.bind(this),

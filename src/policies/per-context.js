@@ -2,8 +2,12 @@
 
 const Policy = require("../policy");
 
-const _cache = Symbol("cache");
-const _field = Symbol("field");
+/**
+ * Storage for internal properties of PerContextPolicy instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * A caching policy that will cache values for a context field.
@@ -18,8 +22,10 @@ const PerContextPolicy = class extends Policy {
 	 */
 	constructor(cache, field) {
 		super();
-		this[_cache] = cache;
-		this[_field] = field;
+		properties.set(this, {
+			cache,
+			field,
+		});
 	}
 
 	/**
@@ -31,12 +37,13 @@ const PerContextPolicy = class extends Policy {
 	 * @returns {*} A value constructed from the factory.
 	 */
 	getValue(context, factory) {
-		const field = context[this[_field]];
-		let   cache = this[_cache].get(field);
+		const props = properties.get(this);
+		const field = context[props.field];
+		let   cache = props.cache.get(field);
 
 		if (!cache) {
 			cache = {};
-			this[_cache].set(field, cache);
+			props.cache.set(field, cache);
 		}
 
 		let value = cache[context.name];

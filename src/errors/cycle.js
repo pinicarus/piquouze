@@ -1,6 +1,11 @@
 "use strict";
 
-const _cycle = Symbol("cycle");
+/**
+ * Storage for internal properties of CycleError instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * An error representing a dependency cycle.
@@ -13,7 +18,9 @@ const CycleError = class CycleError extends Error {
 	 */
 	constructor(cycle) {
 		super(`Circular dependencies: ${cycle}`);
-		this[_cycle] = Array.from(cycle);
+		properties.set(this, {
+			cycle: Array.from(cycle),
+		});
 	}
 
 	/**
@@ -22,7 +29,7 @@ const CycleError = class CycleError extends Error {
 	 * @returns {Array} The cycling dependencies.
 	 */
 	get cycle() {
-		return Array.from(this[_cycle]);
+		return Array.from(properties.get(this).cycle);
 	}
 };
 

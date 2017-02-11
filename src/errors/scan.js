@@ -1,6 +1,11 @@
 "use strict";
 
-const _functor = Symbol("functor");
+/**
+ * Storage for internal properties of ScanError instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * An error representing a functor scanning error.
@@ -13,7 +18,9 @@ const ScanError = class ScanError extends Error {
 	 */
 	constructor(functor) {
 		super(`Scan error: ${functor}`);
-		this[_functor] = functor;
+		properties.set(this, {
+			functor,
+		});
 	}
 
 	/**
@@ -22,7 +29,7 @@ const ScanError = class ScanError extends Error {
 	 * @returns {Function} The functor.
 	 */
 	get functor() {
-		return this[_functor];
+		return properties.get(this).functor;
 	}
 };
 

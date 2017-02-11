@@ -4,9 +4,6 @@ const KillSwitch             = require("./kill-switch");
 const MissingDependencyError = require("./errors/missing");
 const mark                   = require("./mark");
 
-const _killSwitch = Symbol("killSwitch");
-const _resolved   = Symbol("resolved");
-
 /**
  * A Caching policy context.
  * @typedef Context
@@ -42,6 +39,13 @@ const injectable = function injectable(dependencies, marking, functor) {
 };
 
 /**
+ * Storage for internal properties of Injector instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
+
+/**
  * An injection handler.
  * @private
  */
@@ -50,8 +54,10 @@ const Injector = class Injector {
 	 * Constructs a new injector.
 	 */
 	constructor() {
-		this[_killSwitch] = new KillSwitch();
-		this[_resolved]   = {};
+		properties.set(this, {
+			killSwitch: new KillSwitch(),
+			resolved:   {},
+		});
 	}
 
 	/**
@@ -64,10 +70,11 @@ const Injector = class Injector {
 	 * @throws  {MissingDependencyError} Whenever a dependency is not resolvable.
 	 */
 	inject(container, functor) {
-		const marking = mark(functor);
+		const {killSwitch, resolved} = properties.get(this);
+		const marking                = mark(functor);
 
 		const dependencies = marking.inject.map((name) => {
-			if (!this[_resolved].hasOwnProperty(name)) {
+			if (!resolved.hasOwnProperty(name)) {
 				if (!(name in container)) {
 					if (!(name in marking.defaults)) {
 						throw new MissingDependencyError(name);
@@ -76,21 +83,21 @@ const Injector = class Injector {
 					let dependency = marking.defaults[name];
 
 					if (dependency instanceof Function) {
-						this[_killSwitch].enter(name);
+						killSwitch.enter(name);
 						dependency = this.inject(container, dependency)();
-						this[_killSwitch].exit();
+						killSwitch.exit();
 					}
-					this[_resolved][name] = dependency;
+					resolved[name] = dependency;
 				} else {
 					const descriptor = container[name];
 					const value      = descriptor.value;
 
 					if (!(value instanceof Object) || !descriptor.marking) {
-						this[_resolved][name] = value;
+						resolved[name] = value;
 					} else {
-						this[_killSwitch].enter(name);
+						killSwitch.enter(name);
 						const factory = this.inject(container, value);
-						this[_killSwitch].exit();
+						killSwitch.exit();
 
 						const context = {
 							container,
@@ -98,7 +105,7 @@ const Injector = class Injector {
 							name,
 						};
 
-						Object.defineProperty(this[_resolved], name, {
+						Object.defineProperty(resolved, name, {
 							enumerable:   true,
 							configurable: false,
 							get:          () => descriptor.policy.getValue(context, factory),
@@ -106,7 +113,7 @@ const Injector = class Injector {
 					}
 				}
 			}
-			return this[_resolved][name];
+			return resolved[name];
 		});
 
 		return injectable(dependencies, marking, functor);

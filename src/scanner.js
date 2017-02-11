@@ -54,10 +54,12 @@ const parse = function parse(assert, functor) {
 	return [node, kind];
 };
 
-const _kind     = Symbol("kind");
-const _name     = Symbol("name");
-const _params   = Symbol("params");
-const _defaults = Symbol("defaults");
+/**
+ * Storage for internal properties of Injector instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * Scans functors.
@@ -75,16 +77,19 @@ const Scanner = class Scanner {
 		const assert     = makeAssert(functor);
 		let [node, kind] = parse(assert, functor);
 
-		this[_kind]     = kind;
-		this[_name]     = null;
-		this[_params]   = [];
-		this[_defaults] = {};
+		const props = {
+			kind,
+			name:     null,
+			params:   [],
+			defaults: {},
+		};
+		properties.set(this, props);
 
 		switch (kind) {
 			case "class": {
 				if (node.id) {
 					assert(node.id.type === esprima.Syntax.Identifier);
-					this[_name] = node.id.name;
+					props.name = node.id.name;
 				}
 				const superClass = node.superClass;
 				node = node.body;
@@ -103,7 +108,7 @@ const Scanner = class Scanner {
 			case "method":
 				if (node.id) {
 					assert(node.id.type === esprima.Syntax.Identifier);
-					this[_name] = node.id.name;
+					props.name = node.id.name;
 				}
 				break;
 		}
@@ -115,8 +120,8 @@ const Scanner = class Scanner {
 					const name  = param.left.name;
 					const value = param.right;
 
-					this[_params].push(name);
-					this[_defaults][name] = new Function(
+					props.params.push(name);
+					props.defaults[name] = new Function(
 						`return ${escodegen.generate(value)};`
 					);
 					break;
@@ -124,7 +129,7 @@ const Scanner = class Scanner {
 				case esprima.Syntax.Identifier: {
 					const name  = param.name;
 
-					this[_params].push(name);
+					props.params.push(name);
 					break;
 				}
 			}
@@ -137,7 +142,7 @@ const Scanner = class Scanner {
 	 * @returns {String} The functor kind.
 	 */
 	getKind() {
-		return this[_kind];
+		return properties.get(this).kind;
 	}
 
 	/**
@@ -147,7 +152,7 @@ const Scanner = class Scanner {
 	 * @returns {?String} The functor name.
 	 */
 	getName() {
-		return this[_name];
+		return properties.get(this).name;
 	}
 
 	/**
@@ -156,7 +161,7 @@ const Scanner = class Scanner {
 	 * @returns {String[]} The functor parameter names.
 	 */
 	getParams() {
-		return this[_params];
+		return properties.get(this).params;
 	}
 
 	/**
@@ -165,7 +170,7 @@ const Scanner = class Scanner {
 	 * @returns {Object<String, Function>} The default value constructors.
 	 */
 	getDefaults() {
-		return this[_defaults];
+		return properties.get(this).defaults;
 	}
 };
 
