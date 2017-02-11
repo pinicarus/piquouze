@@ -47,10 +47,10 @@ const mark = function mark(functor) {
 		const scanner = makeScanner(functor);
 
 		marking = {
-			kind:     typeof functor.$kind === "string" && functor.$kind ? functor.$kind     : scanner().getKind(),
-			name:     typeof functor.$name === "string" && functor.$name ? functor.$name     : scanner().getName(),
-			inject:   functor.$inject instanceof Array                   ? functor.$inject   : scanner().getParams(),
-			defaults: functor.$defaults instanceof Object                ? functor.$defaults : scanner().getDefaults(),
+			kind:     typeof functor.$kind === "string" && functor.$kind ? functor.$kind     : scanner().kind,
+			name:     typeof functor.$name === "string" && functor.$name ? functor.$name     : scanner().name,
+			inject:   functor.$inject instanceof Array                   ? functor.$inject   : scanner().params,
+			defaults: functor.$defaults instanceof Object                ? functor.$defaults : scanner().defaults,
 		};
 		markings.set(functor, marking);
 	}

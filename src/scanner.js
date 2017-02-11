@@ -141,7 +141,7 @@ const Scanner = class Scanner {
 	 *
 	 * @returns {String} The functor kind.
 	 */
-	getKind() {
+	get kind() {
 		return properties.get(this).kind;
 	}
 
@@ -151,7 +151,7 @@ const Scanner = class Scanner {
 	 *
 	 * @returns {?String} The functor name.
 	 */
-	getName() {
+	get name() {
 		return properties.get(this).name;
 	}
 
@@ -160,7 +160,7 @@ const Scanner = class Scanner {
 	 *
 	 * @returns {String[]} The functor parameter names.
 	 */
-	getParams() {
+	get params() {
 		return properties.get(this).params;
 	}
 
@@ -169,7 +169,7 @@ const Scanner = class Scanner {
 	 *
 	 * @returns {Object<String, Function>} The default value constructors.
 	 */
-	getDefaults() {
+	get defaults() {
 		return properties.get(this).defaults;
 	}
 };
