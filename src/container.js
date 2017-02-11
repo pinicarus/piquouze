@@ -93,7 +93,7 @@ const Container = class Container {
 				}
 				return parents;
 			 }, [])) {
-			const merged = Object.assign.apply(undefined, [{}].concat(values));
+			const merged = Object.assign({}, ...values);
 
 			Object.setPrototypeOf(next, merged);
 			next = merged;
