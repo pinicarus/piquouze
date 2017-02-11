@@ -2,8 +2,8 @@
 
 /**
  * @typedef {Object} Iterable - An iterable object
- * @property {Function} @@iterator - The function returning an iterator over
- * the iterable.
+ *
+ * @property {Function} @@iterator - The function returning an iterator over the iterable.
  */
 
 const facies = require("facies");
@@ -13,6 +13,14 @@ const PerInjectionPolicy = require("./policies/per-injection");
 const Policy = require("./policy");
 const mark = require("./mark");
 
+/**
+ * Returns an iterator over the entries of a container.
+ * @private
+ *
+ * @param {Object<String, *>} container - The container to get the entries from.
+ *
+ * @returns {GeneratorFunction} The entries iterator.
+ */
 const getEntriesIterator = function (container) {
 	const values = Object.keys(container).map((key) => [
 		key,
@@ -23,6 +31,11 @@ const getEntriesIterator = function (container) {
 	return values[Symbol.iterator]();
 };
 
+/**
+ * The factories default caching policy
+ * @private
+ * @type {Policy}
+ */
 const defaultPolicy = new PerInjectionPolicy();
 
 /**
@@ -35,8 +48,7 @@ const properties = new WeakMap();
 /**
  * A dependency container.
  * Each dependency is registered with a name and a caching policy.
- * Dependencies can be any first class value except undefined, or a factory
- * function or class.
+ * Dependencies can be any first class value except undefined, or a factory function or class.
  */
 const Container = class Container {
 	/**
@@ -47,7 +59,7 @@ const Container = class Container {
 	}
 
 	/**
-	 * Create a new child container.
+	 * Creates a new child container.
 	 *
 	 * @returns {Container} A new child container.
 	 */
@@ -59,7 +71,7 @@ const Container = class Container {
 	}
 
 	/**
-	 * Merge multiple container hierarchies.
+	 * Merges multiple container hierarchies.
 	 *
 	 * @param {...Container} containers - The list of containers to merge.
 	 *
@@ -91,7 +103,7 @@ const Container = class Container {
 	}
 
 	/**
-	 * Register a value as a first-class item.
+	 * Registers a value as a first-class item.
 	 *
 	 * @param {String} name  - The name of the value.
 	 * @param {*}      value - The actual value.
@@ -103,7 +115,7 @@ const Container = class Container {
 	}
 
 	/**
-	 * Register a factory value.
+	 * Registers a factory value.
 	 *
 	 * @param {String}   [name]   - The name of the factory.
 	 * @param {Function} functor  - The actual factory.
@@ -137,7 +149,7 @@ const Container = class Container {
 	}
 
 	/**
-	 * Inject a functor with registered values.
+	 * Injects a functor with registered values.
 	 *
 	 * @param {Function}          functor   - The functor to inject.
 	 * @param {Object<String, *>} [values]  - Extra injectable dependencies.
@@ -166,11 +178,9 @@ const Container = class Container {
 	}
 
 	/**
-	 * Returns an iterable of [key, value] entries registered explicitely on the
-	 * container.
+	 * Returns an iterable of [key, value, type] entries registered explicitely on the container.
 	 *
-	 * @returns {Iterable} An iterable object over the entries of values
-	 * explicitely registered on the container.
+	 * @returns {Iterable} An iterable object over the entries of values explicitely registered on the container.
 	 */
 	getOwnEntries() {
 		return {
@@ -179,11 +189,10 @@ const Container = class Container {
 	}
 
 	/**
-	 * Returns an iterable of [key, value] entries registered explicitely on the
-	 * container.
+	 * Returns an iterable of [key, value, type] entries registered explicitely on the container.
 	 *
-	 * @returns {Iterable} An iterable object over the entries of values
-	 * explicitely registered on the container.
+	 * @returns {Iterable} An iterable object over the entries of values registered on the container or any of its
+	 * ancestors.
 	 */
 	getEntries() {
 		return {

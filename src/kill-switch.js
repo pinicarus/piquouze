@@ -27,7 +27,7 @@ const KillSwitch = class KillSwitch {
 	}
 
 	/**
-	 * Add a new value to the set of inspected values.
+	 * Adds a new value to the set of inspected values.
 	 *
 	 * @param {*} value - A new value to inspect.
 	 *
@@ -44,7 +44,7 @@ const KillSwitch = class KillSwitch {
 	}
 
 	/**
-	 * Forget about the last added value.
+	 * Forgets about the last added value.
 	 */
 	exit() {
 		const {seen, circuit} = properties.get(this);

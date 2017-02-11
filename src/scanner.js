@@ -5,6 +5,14 @@ const esprima   = require("esprima");
 
 const ScanError = require("./errors/scan");
 
+/**
+ * Returns an assertion checking function.
+ * @private
+ *
+ * @param {Function} functor - The functor to report error on.
+ *
+ * @returns {Function} The assertion checking function.
+ */
 const makeAssert = function makeAssert(functor) {
 	return (truthy) => {
 		if (!truthy) {
@@ -13,6 +21,15 @@ const makeAssert = function makeAssert(functor) {
 	};
 };
 
+/**
+ * Parses a functor representation.
+ * @private
+ *
+ * @param {Function} assert  - The assertion checking function to use for error reporting.
+ * @param {Function} functor - The functor to parse.
+ *
+ * @return {Array} A pair with the next AST node and the functor parsed kind.
+ */
 const parse = function parse(assert, functor) {
 	let node, kind;
 
@@ -137,7 +154,7 @@ const Scanner = class Scanner {
 	}
 
 	/**
-	 * Returns the kind of a functor (class, function or arrow).
+	 * The kind of a functor (class, function or arrow).
 	 *
 	 * @returns {String} The functor kind.
 	 */
@@ -146,8 +163,7 @@ const Scanner = class Scanner {
 	}
 
 	/**
-	 * Returns the name of a functor (named class or named function) or null
-	 * (unnamed class, unnamed function or arrow).
+	 * The name of a functor (named class or named function) or null (unnamed class, unnamed function or arrow).
 	 *
 	 * @returns {?String} The functor name.
 	 */
@@ -156,7 +172,7 @@ const Scanner = class Scanner {
 	}
 
 	/**
-	 * Returns the functor injectable parameter names.
+	 * The functor injectable parameter names.
 	 *
 	 * @returns {String[]} The functor parameter names.
 	 */
@@ -165,7 +181,7 @@ const Scanner = class Scanner {
 	}
 
 	/**
-	 * Returns the functor parameter default values.
+	 * The functor parameter default values.
 	 *
 	 * @returns {Object<String, Function>} The default value constructors.
 	 */

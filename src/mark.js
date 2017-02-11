@@ -29,6 +29,11 @@ const makeScanner = function makeScanner (functor) {
 	};
 };
 
+/**
+ * The cache of marked functors.
+ * @private
+ * @type {WeakMap}
+ */
 const markings = new WeakMap();
 
 /**
