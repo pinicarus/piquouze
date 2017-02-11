@@ -6,10 +6,7 @@
  * the iterable.
  */
 
-const {
-	TypeDefinition,
-	match,
-} = require("facies");
+const facies = require("facies");
 
 const Injector = require("./injector");
 const PerInjectionPolicy = require("./policies/per-injection");
@@ -69,15 +66,12 @@ const Container = class Container {
 	 * @returns {Container} The merged containers.
 	 */
 	static merge(...containers) {
-		match(containers, [
-			new TypeDefinition(Container, null, containers.length),
-		], true);
+		facies.match(containers, new Array(containers.length).fill(new facies.TypeDefinition(Container)), true);
 
 		const child = new Container();
 		let   next  = properties.get(child);
 
-		for(let values = containers.filter((container) => container !== null)
-			                        .map((container) => properties.get(container));
+		for(let values = containers.map((container) => properties.get(container));
 			 values.length > 0;
 			 values = values.reduce((parents, value) => {
 				const parent = Object.getPrototypeOf(value);
@@ -103,9 +97,7 @@ const Container = class Container {
 	 * @param {*}      value - The actual value.
 	 */
 	registerValue(name, value) {
-		match(arguments, [
-			new TypeDefinition(String),
-		], false);
+		facies.match(arguments, [new facies.TypeDefinition(String)], false);
 
 		properties.get(this)[name] = {value};
 	}
@@ -121,22 +113,26 @@ const Container = class Container {
 	* @throws {TypeError} Whenever the policy does not inherit from Policy.
 	* @throws {TypeError} Whenever no name was given and none could be inferred.
 	*/
-	registerFactory() {
-		let [name, value, policy] = match(arguments, [
-			new TypeDefinition(String, null),
-			new TypeDefinition(Function),
-			new TypeDefinition(Policy, defaultPolicy),
+	registerFactory(name, functor, policy) {
+		let [
+			_name,
+			_functor,
+			_policy,
+		] = facies.match(arguments, [
+			new facies.TypeDefinition(String, null),
+			new facies.TypeDefinition(Function),
+			new facies.TypeDefinition(Policy, defaultPolicy),
 		], true);
-		const marking = mark(value);
+		const marking = mark(_functor);
 
-		name = name || marking.name;
-		if (!name) {
+		_name = _name || marking.name;
+		if (!_name) {
 			throw new TypeError("Missing functor name");
 		}
-		properties.get(this)[name] = {
+		properties.get(this)[_name] = {
 			marking,
-			value,
-			policy,
+			value:  _functor,
+			policy: _policy,
 		};
 	}
 
@@ -149,21 +145,24 @@ const Container = class Container {
 	 * @returns {Function}  The injected functor.
 	 * @throws  {TypeError} Whenever the functor does not inherit from Function.
 	 */
-	inject() {
-		const [functor, values] = match(arguments, [
-			new TypeDefinition(Function),
-			new TypeDefinition(Object, null),
+	inject(functor, values) {
+		const [
+			_functor,
+			_values,
+		] = facies.match(arguments, [
+			new facies.TypeDefinition(Function),
+			new facies.TypeDefinition(Object, null),
 		], true);
 		let container = this;
 
-		if (values) {
+		if (_values) {
 			container = container.createChild();
-			for (const key in values) {
-				container.registerValue(key, values[key]);
+			for (const key in _values) {
+				container.registerValue(key, _values[key]);
 			}
 		}
 
-		return new Injector().inject(properties.get(container), functor);
+		return new Injector().inject(properties.get(container), _functor);
 	}
 
 	/**
