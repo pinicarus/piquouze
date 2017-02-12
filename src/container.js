@@ -2,20 +2,25 @@
 
 /**
  * @typedef {Object} Iterable - An iterable object
- * @property {Function} @@iterator - The function returning an iterator over
- * the iterable.
+ *
+ * @property {Function} @@iterator - The function returning an iterator over the iterable.
  */
 
-const {
-	TypeDefinition,
-	match,
-} = require("facies");
+const facies = require("facies");
 
 const Injector = require("./injector");
 const PerInjectionPolicy = require("./policies/per-injection");
 const Policy = require("./policy");
 const mark = require("./mark");
 
+/**
+ * Returns an iterator over the entries of a container.
+ * @private
+ *
+ * @param {Object<String, *>} container - The container to get the entries from.
+ *
+ * @returns {GeneratorFunction} The entries iterator.
+ */
 const getEntriesIterator = function (container) {
 	const values = Object.keys(container).map((key) => [
 		key,
@@ -26,52 +31,59 @@ const getEntriesIterator = function (container) {
 	return values[Symbol.iterator]();
 };
 
+/**
+ * The factories default caching policy
+ * @private
+ * @type {Policy}
+ */
 const defaultPolicy = new PerInjectionPolicy();
 
-const _container = Symbol("container");
+/**
+ * Storage for internal properties of Container instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * A dependency container.
  * Each dependency is registered with a name and a caching policy.
- * Dependencies can be any first class value except undefined, or a factory
- * function or class.
+ * Dependencies can be any first class value except undefined, or a factory function or class.
  */
 const Container = class Container {
 	/**
 	 * Constructs a new container.
 	 */
 	constructor() {
-		this[_container] = Object.setPrototypeOf({}, null);
+		properties.set(this, Object.setPrototypeOf({}, null));
 	}
 
 	/**
-	 * Create a new child container.
+	 * Creates a new child container.
 	 *
 	 * @returns {Container} A new child container.
 	 */
 	createChild() {
 		const child = new Container();
 
-		Object.setPrototypeOf(child[_container], this[_container]);
+		Object.setPrototypeOf(properties.get(child), properties.get(this));
 		return child;
 	}
 
 	/**
-	 * Merge multiple container hierarchies.
+	 * Merges multiple container hierarchies.
 	 *
 	 * @param {...Container} containers - The list of containers to merge.
 	 *
 	 * @returns {Container} The merged containers.
 	 */
 	static merge(...containers) {
-		match(containers, [
-			new TypeDefinition(Container, null, containers.length),
-		], true);
+		facies.match(containers, new Array(containers.length).fill(new facies.TypeDefinition(Container)), true);
 
 		const child = new Container();
-		let   next  = child[_container];
+		let   next  = properties.get(child);
 
-		for(let values = containers.filter((container) => container !== null).map((container) => container[_container]);
+		for(let values = containers.map((container) => properties.get(container));
 			 values.length > 0;
 			 values = values.reduce((parents, value) => {
 				const parent = Object.getPrototypeOf(value);
@@ -81,7 +93,7 @@ const Container = class Container {
 				}
 				return parents;
 			 }, [])) {
-			const merged = Object.assign.apply(undefined, [{}].concat(values));
+			const merged = Object.assign({}, ...values);
 
 			Object.setPrototypeOf(next, merged);
 			next = merged;
@@ -91,21 +103,19 @@ const Container = class Container {
 	}
 
 	/**
-	 * Register a value as a first-class item.
+	 * Registers a value as a first-class item.
 	 *
 	 * @param {String} name  - The name of the value.
 	 * @param {*}      value - The actual value.
 	 */
 	registerValue(name, value) {
-		match(arguments, [
-			new TypeDefinition(String),
-		], false);
+		facies.match(arguments, [new facies.TypeDefinition(String)], false);
 
-		this[_container][name] = {value};
+		properties.get(this)[name] = {value};
 	}
 
 	/**
-	 * Register a factory value.
+	 * Registers a factory value.
 	 *
 	 * @param {String}   [name]   - The name of the factory.
 	 * @param {Function} functor  - The actual factory.
@@ -115,27 +125,31 @@ const Container = class Container {
 	* @throws {TypeError} Whenever the policy does not inherit from Policy.
 	* @throws {TypeError} Whenever no name was given and none could be inferred.
 	*/
-	registerFactory() {
-		let [name, value, policy] = match(arguments, [
-			new TypeDefinition(String, null),
-			new TypeDefinition(Function),
-			new TypeDefinition(Policy, defaultPolicy),
+	registerFactory(name, functor, policy) {
+		let [
+			_name,
+			_functor,
+			_policy,
+		] = facies.match(arguments, [
+			new facies.TypeDefinition(String, null),
+			new facies.TypeDefinition(Function),
+			new facies.TypeDefinition(Policy, defaultPolicy),
 		], true);
-		const marking = mark(value);
+		const marking = mark(_functor);
 
-		name = name || marking.name;
-		if (!name) {
+		_name = _name || marking.name;
+		if (!_name) {
 			throw new TypeError("Missing functor name");
 		}
-		this[_container][name] = {
+		properties.get(this)[_name] = {
 			marking,
-			value,
-			policy,
+			value:  _functor,
+			policy: _policy,
 		};
 	}
 
 	/**
-	 * Inject a functor with registered values.
+	 * Injects a functor with registered values.
 	 *
 	 * @param {Function}          functor   - The functor to inject.
 	 * @param {Object<String, *>} [values]  - Extra injectable dependencies.
@@ -143,49 +157,49 @@ const Container = class Container {
 	 * @returns {Function}  The injected functor.
 	 * @throws  {TypeError} Whenever the functor does not inherit from Function.
 	 */
-	inject() {
-		const [functor, values] = match(arguments, [
-			new TypeDefinition(Function),
-			new TypeDefinition(Object, null),
+	inject(functor, values) {
+		const [
+			_functor,
+			_values,
+		] = facies.match(arguments, [
+			new facies.TypeDefinition(Function),
+			new facies.TypeDefinition(Object, null),
 		], true);
 		let container = this;
 
-		if (values) {
+		if (_values) {
 			container = container.createChild();
-			for (const key in values) {
-				container.registerValue(key, values[key]);
+			for (const key in _values) {
+				container.registerValue(key, _values[key]);
 			}
 		}
 
-		return new Injector().inject(container[_container], functor);
+		return new Injector().inject(properties.get(container), _functor);
 	}
 
 	/**
-	 * Returns an iterable of [key, value] entries registered explicitely on the
-	 * container.
+	 * Returns an iterable of [key, value, type] entries registered explicitely on the container.
 	 *
-	 * @returns {Iterable} An iterable object over the entries of values
-	 * explicitely registered on the container.
+	 * @returns {Iterable} An iterable object over the entries of values explicitely registered on the container.
 	 */
 	getOwnEntries() {
 		return {
-			[Symbol.iterator]: () => getEntriesIterator(this[_container]),
+			[Symbol.iterator]: () => getEntriesIterator(properties.get(this)),
 		};
 	}
 
 	/**
-	 * Returns an iterable of [key, value] entries registered explicitely on the
-	 * container.
+	 * Returns an iterable of [key, value, type] entries registered explicitely on the container.
 	 *
-	 * @returns {Iterable} An iterable object over the entries of values
-	 * explicitely registered on the container.
+	 * @returns {Iterable} An iterable object over the entries of values registered on the container or any of its
+	 * ancestors.
 	 */
 	getEntries() {
 		return {
 			[Symbol.iterator]: function* () {
-				for(let container = this[_container];
-					container !== null;
-					container = Object.getPrototypeOf(container)) {
+				for(let container = properties.get(this);
+					 container !== null;
+					 container = Object.getPrototypeOf(container)) {
 					yield* getEntriesIterator(container);
 				}
 			}.bind(this),

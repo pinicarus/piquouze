@@ -4,8 +4,7 @@
 <dt><a href="#Container">Container</a></dt>
 <dd><p>A dependency container.
 Each dependency is registered with a name and a caching policy.
-Dependencies can be any first class value except undefined, or a factory
-function or class.</p>
+Dependencies can be any first class value except undefined, or a factory function or class.</p>
 </dd>
 <dt><a href="#Policy">Policy</a></dt>
 <dd><p>Parent class for all caching policies.
@@ -26,8 +25,7 @@ Children classes must re-implement the `getValue&#39; method.</p>
 # Container
 A dependency container.
 Each dependency is registered with a name and a caching policy.
-Dependencies can be any first class value except undefined, or a factory
-function or class.
+Dependencies can be any first class value except undefined, or a factory function or class.
 
 **Kind**: global class  
 
@@ -51,14 +49,14 @@ Constructs a new container.
 <a name="Container+createChild"></a>
 
 ## container.createChild() ⇒ <code>[Container](#Container)</code>
-Create a new child container.
+Creates a new child container.
 
 **Kind**: instance method of <code>[Container](#Container)</code>  
 **Returns**: <code>[Container](#Container)</code> - A new child container.  
 <a name="Container+registerValue"></a>
 
 ## container.registerValue(name, value)
-Register a value as a first-class item.
+Registers a value as a first-class item.
 
 **Kind**: instance method of <code>[Container](#Container)</code>  
 
@@ -70,7 +68,7 @@ Register a value as a first-class item.
 <a name="Container+registerFactory"></a>
 
 ## container.registerFactory([name], functor, [policy])
-Register a factory value.
+Registers a factory value.
 
 **Kind**: instance method of <code>[Container](#Container)</code>  
 **Throws**:
@@ -89,7 +87,7 @@ Register a factory value.
 <a name="Container+inject"></a>
 
 ## container.inject(functor, [values]) ⇒ <code>function</code>
-Inject a functor with registered values.
+Injects a functor with registered values.
 
 **Kind**: instance method of <code>[Container](#Container)</code>  
 **Returns**: <code>function</code> - The injected functor.  
@@ -106,25 +104,22 @@ Inject a functor with registered values.
 <a name="Container+getOwnEntries"></a>
 
 ## container.getOwnEntries() ⇒ <code>[Iterable](#Iterable)</code>
-Returns an iterable of [key, value] entries registered explicitely on the
-container.
+Returns an iterable of [key, value, type] entries registered explicitely on the container.
 
 **Kind**: instance method of <code>[Container](#Container)</code>  
-**Returns**: <code>[Iterable](#Iterable)</code> - An iterable object over the entries of values
-explicitely registered on the container.  
+**Returns**: <code>[Iterable](#Iterable)</code> - An iterable object over the entries of values explicitely registered on the container.  
 <a name="Container+getEntries"></a>
 
 ## container.getEntries() ⇒ <code>[Iterable](#Iterable)</code>
-Returns an iterable of [key, value] entries registered explicitely on the
-container.
+Returns an iterable of [key, value, type] entries registered explicitely on the container.
 
 **Kind**: instance method of <code>[Container](#Container)</code>  
-**Returns**: <code>[Iterable](#Iterable)</code> - An iterable object over the entries of values
-explicitely registered on the container.  
+**Returns**: <code>[Iterable](#Iterable)</code> - An iterable object over the entries of values registered on the container or any of its
+ancestors.  
 <a name="Container.merge"></a>
 
 ## Container.merge(...containers) ⇒ <code>[Container](#Container)</code>
-Merge multiple container hierarchies.
+Merges multiple container hierarchies.
 
 **Kind**: static method of <code>[Container](#Container)</code>  
 **Returns**: <code>[Container](#Container)</code> - The merged containers.  

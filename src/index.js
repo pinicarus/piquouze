@@ -3,6 +3,8 @@
 module.exports = Object.freeze({
 	Container: require("./container"),
 
+	Policy: require("./policy"),
+
 	caching: Object.freeze({
 		Always:       require("./policies/always"),
 		PerContainer: require("./policies/per-container"),

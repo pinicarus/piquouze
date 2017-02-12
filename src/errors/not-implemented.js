@@ -1,6 +1,11 @@
 "use strict";
 
-const _name = Symbol("name");
+/**
+ * Storage for internal properties of NotImplementedError instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * An error representing some not implemented code.
@@ -13,7 +18,9 @@ const NotImplementedError = class NotImplementedError extends Error {
 	 */
 	constructor(name) {
 		super(`${name} not implemented`);
-		this[_name] = name;
+		properties.set(this, {
+			name,
+		});
 	}
 
 	/**
@@ -22,7 +29,7 @@ const NotImplementedError = class NotImplementedError extends Error {
 	 * @returns {String} The name of the missing code.
 	 */
 	get name() {
-		return this[_name];
+		return properties.get(this).name;
 	}
 };
 

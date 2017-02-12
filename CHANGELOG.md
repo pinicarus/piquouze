@@ -1,3 +1,7 @@
+# 4.1.0:
+  - Enforce visibility boundaries
+  - Expose caching policies base clas
+
 # 4.0.1:
   - Migrate to facies 2.x
 

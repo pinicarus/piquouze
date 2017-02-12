@@ -5,6 +5,14 @@ const esprima   = require("esprima");
 
 const ScanError = require("./errors/scan");
 
+/**
+ * Returns an assertion checking function.
+ * @private
+ *
+ * @param {Function} functor - The functor to report error on.
+ *
+ * @returns {Function} The assertion checking function.
+ */
 const makeAssert = function makeAssert(functor) {
 	return (truthy) => {
 		if (!truthy) {
@@ -13,6 +21,15 @@ const makeAssert = function makeAssert(functor) {
 	};
 };
 
+/**
+ * Parses a functor representation.
+ * @private
+ *
+ * @param {Function} assert  - The assertion checking function to use for error reporting.
+ * @param {Function} functor - The functor to parse.
+ *
+ * @return {Array} A pair with the next AST node and the functor parsed kind.
+ */
 const parse = function parse(assert, functor) {
 	let node, kind;
 
@@ -54,10 +71,12 @@ const parse = function parse(assert, functor) {
 	return [node, kind];
 };
 
-const _kind     = Symbol("kind");
-const _name     = Symbol("name");
-const _params   = Symbol("params");
-const _defaults = Symbol("defaults");
+/**
+ * Storage for internal properties of Injector instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * Scans functors.
@@ -75,16 +94,19 @@ const Scanner = class Scanner {
 		const assert     = makeAssert(functor);
 		let [node, kind] = parse(assert, functor);
 
-		this[_kind]     = kind;
-		this[_name]     = null;
-		this[_params]   = [];
-		this[_defaults] = {};
+		const props = {
+			kind,
+			name:     null,
+			params:   [],
+			defaults: {},
+		};
+		properties.set(this, props);
 
 		switch (kind) {
 			case "class": {
 				if (node.id) {
 					assert(node.id.type === esprima.Syntax.Identifier);
-					this[_name] = node.id.name;
+					props.name = node.id.name;
 				}
 				const superClass = node.superClass;
 				node = node.body;
@@ -103,7 +125,7 @@ const Scanner = class Scanner {
 			case "method":
 				if (node.id) {
 					assert(node.id.type === esprima.Syntax.Identifier);
-					this[_name] = node.id.name;
+					props.name = node.id.name;
 				}
 				break;
 		}
@@ -115,8 +137,8 @@ const Scanner = class Scanner {
 					const name  = param.left.name;
 					const value = param.right;
 
-					this[_params].push(name);
-					this[_defaults][name] = new Function(
+					props.params.push(name);
+					props.defaults[name] = new Function(
 						`return ${escodegen.generate(value)};`
 					);
 					break;
@@ -124,7 +146,7 @@ const Scanner = class Scanner {
 				case esprima.Syntax.Identifier: {
 					const name  = param.name;
 
-					this[_params].push(name);
+					props.params.push(name);
 					break;
 				}
 			}
@@ -132,40 +154,39 @@ const Scanner = class Scanner {
 	}
 
 	/**
-	 * Returns the kind of a functor (class, function or arrow).
+	 * The kind of a functor (class, function or arrow).
 	 *
 	 * @returns {String} The functor kind.
 	 */
-	getKind() {
-		return this[_kind];
+	get kind() {
+		return properties.get(this).kind;
 	}
 
 	/**
-	 * Returns the name of a functor (named class or named function) or null
-	 * (unnamed class, unnamed function or arrow).
+	 * The name of a functor (named class or named function) or null (unnamed class, unnamed function or arrow).
 	 *
 	 * @returns {?String} The functor name.
 	 */
-	getName() {
-		return this[_name];
+	get name() {
+		return properties.get(this).name;
 	}
 
 	/**
-	 * Returns the functor injectable parameter names.
+	 * The functor injectable parameter names.
 	 *
 	 * @returns {String[]} The functor parameter names.
 	 */
-	getParams() {
-		return this[_params];
+	get params() {
+		return properties.get(this).params;
 	}
 
 	/**
-	 * Returns the functor parameter default values.
+	 * The functor parameter default values.
 	 *
 	 * @returns {Object<String, Function>} The default value constructors.
 	 */
-	getDefaults() {
-		return this[_defaults];
+	get defaults() {
+		return properties.get(this).defaults;
 	}
 };
 

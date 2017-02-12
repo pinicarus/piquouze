@@ -2,8 +2,12 @@
 
 const CycleError = require("./errors/cycle");
 
-const _seen    = Symbol("seen");
-const _circuit = Symbol("circuit");
+/**
+ * Storage for internal properties of KillSwitch instances
+ * @private
+ * @type {WeakMap}
+ */
+const properties = new WeakMap();
 
 /**
  * A circuit detector to avoid cyclical dependencies.
@@ -16,30 +20,36 @@ const KillSwitch = class KillSwitch {
 	 * @constructor
 	 */
 	constructor() {
-		this[_seen]    = new Map();
-		this[_circuit] = [];
+		properties.set(this, {
+			seen:    new Map(),
+			circuit: [],
+		});
 	}
 
 	/**
-	 * Add a new value to the set of inspected values.
+	 * Adds a new value to the set of inspected values.
 	 *
 	 * @param {*} value - A new value to inspect.
 	 *
 	 * @throws {CycleError} Whenever a cycle is detected.
 	 */
 	enter(value) {
-		this[_circuit].push(value);
-		if (this[_seen].has(value)) {
-			throw new CycleError(this[_circuit]);
+		const {seen, circuit} = properties.get(this);
+
+		circuit.push(value);
+		if (seen.has(value)) {
+			throw new CycleError(circuit);
 		}
-		this[_seen].set(value, true);
+		seen.set(value, true);
 	}
 
 	/**
-	 * Forget about the last added value.
+	 * Forgets about the last added value.
 	 */
 	exit() {
-		this[_seen].delete(this[_circuit].pop());
+		const {seen, circuit} = properties.get(this);
+
+		seen.delete(circuit.pop());
 	}
 };
 
