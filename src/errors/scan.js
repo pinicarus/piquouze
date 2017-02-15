@@ -9,6 +9,7 @@ const properties = new WeakMap();
 
 /**
  * An error representing a functor scanning error.
+ * @memberof errors
  */
 const ScanError = class ScanError extends Error {
 	/**

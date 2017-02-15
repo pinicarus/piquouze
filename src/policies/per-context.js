@@ -12,6 +12,7 @@ const properties = new WeakMap();
 /**
  * A caching policy that will cache values for a context field.
  * @private
+ * @memberof caching
  */
 const PerContextPolicy = class extends Policy {
 	/**

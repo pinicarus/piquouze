@@ -6,6 +6,7 @@ const cache = {};
 
 /**
  * A caching policy that will cache values forever across all containers.
+ * @memberof caching
  */
 const AlwaysPolicy = class extends Policy {
 	/**

@@ -4,6 +4,7 @@ const Policy = require("../policy");
 
 /**
  * A caching policy that never caches any values.
+ * @memberof caching
  */
 const NeverPolicy = class extends Policy {
 	/**

@@ -6,6 +6,7 @@ const cache = new WeakMap();
 
 /**
  * A caching policy that will cache values for each injector.
+ * @memberof caching
  */
 const PerInjectionPolicy = class extends PerContextPolicy {
 	/**
