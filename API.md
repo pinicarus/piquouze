@@ -10,6 +10,12 @@ Dependencies can be any first class value except undefined, or a factory functio
 <dd><p>Parent class for all caching policies.
 Children classes must re-implement the `getValue&#39; method.</p>
 </dd>
+<dt><a href="#Scanner">Scanner</a></dt>
+<dd><p>A functor scanner.</p>
+<p>Scanning is based on the textual representation of the functor. It can be
+used on functions (both regular and arrow) and classes (both constructors
+and methods). Any supported functor can be a generator as well.</p>
+</dd>
 </dl>
 
 # Typedefs
@@ -151,6 +157,66 @@ Returns a (possibly cached) value from the factory.
 | context | <code>Context</code> | The injection context. |
 | factory | <code>function</code> | The injected factory. |
 
+<a name="Scanner"></a>
+
+# Scanner
+A functor scanner.
+
+Scanning is based on the textual representation of the functor. It can be
+used on functions (both regular and arrow) and classes (both constructors
+and methods). Any supported functor can be a generator as well.
+
+**Kind**: global class  
+
+* [Scanner](#Scanner)
+    * [new Scanner(functor)](#new_Scanner_new)
+    * [.kind](#Scanner+kind) ⇒ <code>String</code>
+    * [.name](#Scanner+name) ⇒ <code>String</code>
+    * [.params](#Scanner+params) ⇒ <code>Array.&lt;String&gt;</code>
+    * [.defaults](#Scanner+defaults) ⇒ <code>Object.&lt;String, function()&gt;</code>
+
+<a name="new_Scanner_new"></a>
+
+## new Scanner(functor)
+Constructs a new functor scanner.
+
+**Throws**:
+
+- <code>ScanError</code> Whenever scanning of the functor fails.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| functor | <code>function</code> | The functor to scan. |
+
+<a name="Scanner+kind"></a>
+
+## scanner.kind ⇒ <code>String</code>
+The kind of a functor (class, function or arrow).
+
+**Kind**: instance property of <code>[Scanner](#Scanner)</code>  
+**Returns**: <code>String</code> - The functor kind.  
+<a name="Scanner+name"></a>
+
+## scanner.name ⇒ <code>String</code>
+The name of a functor (named class or named function) or null (unnamed class, unnamed function or arrow).
+
+**Kind**: instance property of <code>[Scanner](#Scanner)</code>  
+**Returns**: <code>String</code> - The functor name.  
+<a name="Scanner+params"></a>
+
+## scanner.params ⇒ <code>Array.&lt;String&gt;</code>
+The functor injectable parameter names.
+
+**Kind**: instance property of <code>[Scanner](#Scanner)</code>  
+**Returns**: <code>Array.&lt;String&gt;</code> - The functor parameter names.  
+<a name="Scanner+defaults"></a>
+
+## scanner.defaults ⇒ <code>Object.&lt;String, function()&gt;</code>
+The functor parameter default values.
+
+**Kind**: instance property of <code>[Scanner](#Scanner)</code>  
+**Returns**: <code>Object.&lt;String, function()&gt;</code> - The default value constructors.  
 <a name="Iterable"></a>
 
 # Iterable : <code>Object</code>

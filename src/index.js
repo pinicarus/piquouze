@@ -5,6 +5,8 @@ module.exports = Object.freeze({
 
 	Policy: require("./policy"),
 
+	Scanner: require("./scanner"),
+
 	caching: Object.freeze({
 		Always:       require("./policies/always"),
 		PerContainer: require("./policies/per-container"),

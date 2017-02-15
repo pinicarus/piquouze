@@ -115,7 +115,7 @@ class myTargetClassWithExtra {
 
 functor = container.inject(myTargetClassWithExtra);
 instance = functor("extraneous"); // -> hello, world
-console.log(instance.extra); // -> ["extraneous"]     
+console.log(instance.extra); // -> ["extraneous"]
 ```
 
 Of course with node version prior to 6.x, the rest operator is not supported,

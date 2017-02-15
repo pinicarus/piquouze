@@ -79,8 +79,11 @@ const parse = function parse(assert, functor) {
 const properties = new WeakMap();
 
 /**
- * Scans functors.
- * @private
+ * A functor scanner.
+ *
+ * Scanning is based on the textual representation of the functor. It can be
+ * used on functions (both regular and arrow) and classes (both constructors
+ * and methods). Any supported functor can be a generator as well.
  */
 const Scanner = class Scanner {
 	/**

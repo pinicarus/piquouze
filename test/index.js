@@ -8,6 +8,8 @@ describe("API", function () {
 	it("should conform", function () {
 		assert(index instanceof Object);
 		assert(index.Container instanceof Function);
+		assert(index.Policy instanceof Function);
+		assert(index.Scanner instanceof Function);
 		assert(index.caching instanceof Object);
 		assert(index.caching.Always instanceof Function);
 		assert(index.caching.PerContainer instanceof Function);
