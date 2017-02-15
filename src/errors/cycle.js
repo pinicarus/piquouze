@@ -9,6 +9,7 @@ const properties = new WeakMap();
 
 /**
  * An error representing a dependency cycle.
+ * @memberof errors
  */
 const CycleError = class CycleError extends Error {
 	/**

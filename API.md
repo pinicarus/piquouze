@@ -18,6 +18,15 @@ and methods). Any supported functor can be a generator as well.</p>
 </dd>
 </dl>
 
+# Objects
+
+<dl>
+<dt><a href="#caching">caching</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#errors">errors</a> : <code>object</code></dt>
+<dd></dd>
+</dl>
+
 # Typedefs
 
 <dl>
@@ -217,6 +226,212 @@ The functor parameter default values.
 
 **Kind**: instance property of <code>[Scanner](#Scanner)</code>  
 **Returns**: <code>Object.&lt;String, function()&gt;</code> - The default value constructors.  
+<a name="caching"></a>
+
+# caching : <code>object</code>
+**Kind**: global namespace  
+
+* [caching](#caching) : <code>object</code>
+    * [.AlwaysPolicy](#caching.AlwaysPolicy)
+        * [.getValue(context, factory)](#caching.AlwaysPolicy+getValue) ⇒ <code>\*</code>
+    * [.NeverPolicy](#caching.NeverPolicy)
+        * [.getValue(context, factory)](#caching.NeverPolicy+getValue) ⇒ <code>\*</code>
+    * [.PerContainerPolicy](#caching.PerContainerPolicy)
+        * [new PerContainerPolicy()](#new_caching.PerContainerPolicy_new)
+    * [.PerInjectionPolicy](#caching.PerInjectionPolicy)
+        * [new PerInjectionPolicy()](#new_caching.PerInjectionPolicy_new)
+
+<a name="caching.AlwaysPolicy"></a>
+
+## caching.AlwaysPolicy
+A caching policy that will cache values forever across all containers.
+
+**Kind**: static class of <code>[caching](#caching)</code>  
+<a name="caching.AlwaysPolicy+getValue"></a>
+
+### alwaysPolicy.getValue(context, factory) ⇒ <code>\*</code>
+Returns the value created from the factory.
+
+**Kind**: instance method of <code>[AlwaysPolicy](#caching.AlwaysPolicy)</code>  
+**Returns**: <code>\*</code> - The first value ever constructed from the factory.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| context | <code>Context</code> | The injection context. |
+| factory | <code>function</code> | The injected factory. |
+
+<a name="caching.NeverPolicy"></a>
+
+## caching.NeverPolicy
+A caching policy that never caches any values.
+
+**Kind**: static class of <code>[caching](#caching)</code>  
+<a name="caching.NeverPolicy+getValue"></a>
+
+### neverPolicy.getValue(context, factory) ⇒ <code>\*</code>
+Returns a new value from the factory.
+
+**Kind**: instance method of <code>[NeverPolicy](#caching.NeverPolicy)</code>  
+**Returns**: <code>\*</code> - A new value constructed from the factory.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| context | <code>Context</code> | The injection context. |
+| factory | <code>function</code> | The injected factory. |
+
+<a name="caching.PerContainerPolicy"></a>
+
+## caching.PerContainerPolicy
+A caching policy that will cache values for each container.
+
+**Kind**: static class of <code>[caching](#caching)</code>  
+<a name="new_caching.PerContainerPolicy_new"></a>
+
+### new PerContainerPolicy()
+Constructs a new caching policy on context containers.
+
+<a name="caching.PerInjectionPolicy"></a>
+
+## caching.PerInjectionPolicy
+A caching policy that will cache values for each injector.
+
+**Kind**: static class of <code>[caching](#caching)</code>  
+<a name="new_caching.PerInjectionPolicy_new"></a>
+
+### new PerInjectionPolicy()
+Constructs a new caching policy on context injectors.
+
+<a name="errors"></a>
+
+# errors : <code>object</code>
+**Kind**: global namespace  
+
+* [errors](#errors) : <code>object</code>
+    * [.CycleError](#errors.CycleError)
+        * [new CycleError(cycle)](#new_errors.CycleError_new)
+        * [.cycle](#errors.CycleError+cycle) ⇒ <code>Array</code>
+    * [.MissingDependencyError](#errors.MissingDependencyError)
+        * [new MissingDependencyError(name)](#new_errors.MissingDependencyError_new)
+        * [.name](#errors.MissingDependencyError+name) ⇒ <code>String</code>
+    * [.NotImplementedError](#errors.NotImplementedError)
+        * [new NotImplementedError(name)](#new_errors.NotImplementedError_new)
+        * [.name](#errors.NotImplementedError+name) ⇒ <code>String</code>
+    * [.ScanError](#errors.ScanError)
+        * [new ScanError(functor)](#new_errors.ScanError_new)
+        * [.functor](#errors.ScanError+functor) ⇒ <code>function</code>
+
+<a name="errors.CycleError"></a>
+
+## errors.CycleError
+An error representing a dependency cycle.
+
+**Kind**: static class of <code>[errors](#errors)</code>  
+
+* [.CycleError](#errors.CycleError)
+    * [new CycleError(cycle)](#new_errors.CycleError_new)
+    * [.cycle](#errors.CycleError+cycle) ⇒ <code>Array</code>
+
+<a name="new_errors.CycleError_new"></a>
+
+### new CycleError(cycle)
+Constructs a new error represending a dependency cycle.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| cycle | <code>Array</code> | The cycling dependencies. |
+
+<a name="errors.CycleError+cycle"></a>
+
+### cycleError.cycle ⇒ <code>Array</code>
+The dependencies cycle.
+
+**Kind**: instance property of <code>[CycleError](#errors.CycleError)</code>  
+**Returns**: <code>Array</code> - The cycling dependencies.  
+<a name="errors.MissingDependencyError"></a>
+
+## errors.MissingDependencyError
+An error representing a missing dependency.
+
+**Kind**: static class of <code>[errors](#errors)</code>  
+
+* [.MissingDependencyError](#errors.MissingDependencyError)
+    * [new MissingDependencyError(name)](#new_errors.MissingDependencyError_new)
+    * [.name](#errors.MissingDependencyError+name) ⇒ <code>String</code>
+
+<a name="new_errors.MissingDependencyError_new"></a>
+
+### new MissingDependencyError(name)
+Constructs a new error representing a missing dependency.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>String</code> | The name of the missing dependency. |
+
+<a name="errors.MissingDependencyError+name"></a>
+
+### missingDependencyError.name ⇒ <code>String</code>
+The name of the missing dependency.
+
+**Kind**: instance property of <code>[MissingDependencyError](#errors.MissingDependencyError)</code>  
+**Returns**: <code>String</code> - The name of the missing dependency.  
+<a name="errors.NotImplementedError"></a>
+
+## errors.NotImplementedError
+An error representing some not implemented code.
+
+**Kind**: static class of <code>[errors](#errors)</code>  
+
+* [.NotImplementedError](#errors.NotImplementedError)
+    * [new NotImplementedError(name)](#new_errors.NotImplementedError_new)
+    * [.name](#errors.NotImplementedError+name) ⇒ <code>String</code>
+
+<a name="new_errors.NotImplementedError_new"></a>
+
+### new NotImplementedError(name)
+Constructs a new error represending some not implemented code
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>String</code> | The name of the missing code. |
+
+<a name="errors.NotImplementedError+name"></a>
+
+### notImplementedError.name ⇒ <code>String</code>
+The name of the missing code.
+
+**Kind**: instance property of <code>[NotImplementedError](#errors.NotImplementedError)</code>  
+**Returns**: <code>String</code> - The name of the missing code.  
+<a name="errors.ScanError"></a>
+
+## errors.ScanError
+An error representing a functor scanning error.
+
+**Kind**: static class of <code>[errors](#errors)</code>  
+
+* [.ScanError](#errors.ScanError)
+    * [new ScanError(functor)](#new_errors.ScanError_new)
+    * [.functor](#errors.ScanError+functor) ⇒ <code>function</code>
+
+<a name="new_errors.ScanError_new"></a>
+
+### new ScanError(functor)
+Constructs a new error represending a functor scanning error.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| functor | <code>function</code> | The functor. |
+
+<a name="errors.ScanError+functor"></a>
+
+### scanError.functor ⇒ <code>function</code>
+The functor that couldn't be scanned.
+
+**Kind**: instance property of <code>[ScanError](#errors.ScanError)</code>  
+**Returns**: <code>function</code> - The functor.  
 <a name="Iterable"></a>
 
 # Iterable : <code>Object</code>

@@ -7,6 +7,9 @@ module.exports = Object.freeze({
 
 	Scanner: require("./scanner"),
 
+	/**
+	 * @namespace
+	 */
 	caching: Object.freeze({
 		Always:       require("./policies/always"),
 		PerContainer: require("./policies/per-container"),
@@ -14,6 +17,9 @@ module.exports = Object.freeze({
 		Never:        require("./policies/never"),
 	}),
 
+	/**
+	 * @namespace
+	 */
 	errors: Object.freeze({
 		Cycle:             require("./errors/cycle"),
 		MissingDependency: require("./errors/missing"),

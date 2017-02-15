@@ -9,6 +9,7 @@ const properties = new WeakMap();
 
 /**
  * An error representing a missing dependency.
+ * @memberof errors
  */
 const MissingDependencyError = class MissingDependencyError extends Error {
 	/**

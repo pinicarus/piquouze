@@ -6,6 +6,7 @@ const cache = new WeakMap();
 
 /**
  * A caching policy that will cache values for each container.
+ * @memberof caching
  */
 const PerContainerPolicy = class extends PerContextPolicy {
 	/**

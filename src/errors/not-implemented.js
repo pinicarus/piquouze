@@ -9,6 +9,7 @@ const properties = new WeakMap();
 
 /**
  * An error representing some not implemented code.
+ * @memberof errors
  */
 const NotImplementedError = class NotImplementedError extends Error {
 	/**
