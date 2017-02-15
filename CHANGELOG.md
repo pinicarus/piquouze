@@ -1,6 +1,10 @@
+# 4.2.0:
+  - Expose scanner class
+  - Fix API documentation generation
+
 # 4.1.0:
   - Enforce visibility boundaries
-  - Expose caching policies base clas
+  - Expose caching policies base class
 
 # 4.0.1:
   - Migrate to facies 2.x
