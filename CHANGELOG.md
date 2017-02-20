@@ -1,3 +1,6 @@
+# 4.2.1:
+  - Remove the functor marking cache
+
 # 4.2.0:
   - Expose scanner class
   - Fix API documentation generation
