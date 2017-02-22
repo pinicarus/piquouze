@@ -589,10 +589,14 @@ describe("Scanner", function () {
 		});
 	});
 
-	it("should fail to scan child class with missing constructor", function () {
-		const parent = class {};
+	it("should scan child class with missing constructor", function () {
+		const C = class extends (class {}) {};
+		const scanner = new Scanner(C);
 
-		assert.throws(() => new Scanner(class extends parent {}), ScanError);
+		assert.equal(scanner.kind, "class");
+		assert.equal(scanner.name, null);
+		assert.deepEqual(scanner.params, []);
+		assert.deepEqual(scanner.defaults, {});
 	});
 
 	it("should fail to scan non-functor", function () {
