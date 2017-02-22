@@ -106,24 +106,22 @@ const Scanner = class Scanner {
 		properties.set(this, props);
 
 		switch (kind) {
-			case "class": {
+			case "class":
 				if (node.id) {
 					assert(node.id.type === esprima.Syntax.Identifier);
 					props.name = node.id.name;
 				}
-				const superClass = node.superClass;
 				node = node.body;
 				assert(node.type === esprima.Syntax.ClassBody);
 				node = node.body.find((method) => method.kind === "constructor");
-				if (!superClass && !node) {
-					// Assume a base class w/o constructor has an empty one.
+				if (!node) {
+					// Assume class w/o constructor has an empty one.
 					return;
 				}
 				assert(node);
 				node = node.value;
 				assert(node.type === esprima.Syntax.FunctionExpression);
 				break;
-			}
 			case "function":
 			case "method":
 				if (node.id) {
