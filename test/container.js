@@ -296,17 +296,6 @@ describe("Container", function () {
 		assert.deepEqual(instance, {b: 2});
 	});
 
-	it("should resolve with extra dependencies", function () {
-		const container = new Container();
-
-		container.registerValue("a", 1);
-
-		const functor = container.inject((a, b) => [a, b], {b: 2});
-
-		assert.deepEqual(functor(), [1, 2]);
-		assert.throws(() => container.inject((a, b) => [a, b]));
-	});
-
 	it("should merge containers hierarchies", function () {
 		const parentA = new Container();
 

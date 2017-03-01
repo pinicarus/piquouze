@@ -14,28 +14,30 @@ const mark                   = require("./mark");
  * @property {String} name      - The name of the injected factory.
  */
 
-const injectable = function injectable(dependencies, marking, functor) {
-	// A function is returned so that it can be rebound afterwards.
-	return function (...extra) {
-		const args = dependencies.concat(extra);
-
-		switch (marking.kind) {
-			case "arrow":
-				return functor.apply(undefined, args);
-			case "class": {
-				const bound = functor.bind(...[undefined].concat(args));
+const injectable = function injectable(dependencies, marking, functor, context) {
+	switch (marking.kind) {
+		case "arrow":
+			return (...extra) => functor(...dependencies.concat(extra));
+		case "class":
+			return function(...extra) {
+				const bound = functor.bind(...[context].concat(dependencies, extra));
 
 				return new bound();
-			}
-		}
+			};
+		case "method":
+			return function(...extra) {
+				return functor.apply(context, dependencies.concat(extra));
+			};
+		case "function":
+			return function(...extra) {
+				const instance = context || Object.create(functor.prototype);
+				const result = functor.apply(instance, dependencies.concat(extra));
 
-		const instance = this || Object.create(functor.prototype);
-		const result   = functor.apply(instance, args);
-
-		return result instanceof Object || Object.getOwnPropertyNames(instance).length === 0
-			? result
-			: instance;
-	};
+				return result instanceof Object || Object.getOwnPropertyNames(instance).length === 0
+					? result
+					: instance;
+			};
+	}
 };
 
 /**
@@ -65,11 +67,12 @@ const Injector = class Injector {
 	 *
 	 * @param {Object}   container - A dependencies container.
 	 * @param {Function} functor   - The functor to inject.
+	 * @param {*}        [context] - The context to bind the injected functor to.
 	 *
 	 * @returns {Function}               The injected functor.
 	 * @throws  {MissingDependencyError} Whenever a dependency is not resolvable.
 	 */
-	inject(container, functor) {
+	inject(container, functor, context) {
 		const {killSwitch, resolved} = properties.get(this);
 		const marking                = mark(functor);
 
@@ -99,16 +102,14 @@ const Injector = class Injector {
 						const factory = this.inject(container, value);
 						killSwitch.exit();
 
-						const context = {
-							container,
-							injector: this,
-							name,
-						};
-
 						Object.defineProperty(resolved, name, {
 							enumerable:   true,
 							configurable: false,
-							get:          () => descriptor.policy.getValue(context, factory),
+							get:          () => descriptor.policy.getValue({
+								container,
+								injector: this,
+								name,
+							}, factory),
 						});
 					}
 				}
@@ -116,7 +117,7 @@ const Injector = class Injector {
 			return resolved[name];
 		});
 
-		return injectable(dependencies, marking, functor);
+		return injectable(dependencies, marking, functor, context);
 	}
 };
 

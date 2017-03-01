@@ -71,31 +71,37 @@ describe("Injector", function () {
 				foo() {
 					return [this];
 				}
+
+				bar() {}
 			};
 			const instance = new target();
 
-			const functor = new Injector().inject(container(), instance.foo).bind(instance);
-
+			let functor = new Injector().inject(container(), instance.foo, instance);
 			assert(functor instanceof Function);
 
-			const result = functor();
-
-			assert(result.length === 1);
+			let result = functor();
+			assert.equal(result.length, 1);
 			assert(result[0] instanceof target);
+
+			functor = new Injector().inject(container(), instance.bar, instance);
+			assert(functor instanceof Function);
+
+			result = functor();
+			assert.equal(result, undefined);
 		});
 
 		describe("with extra parameters", function () {
 			it("should inject a function", function () {
-				const functor = new Injector().inject(container(), mark([], {}, function (a) {
-					return [a];
-				}));
+				const functor = new Injector().inject(container(), function (...a) {
+					return a;
+				});
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), ["x"]);
 			});
 
 			it("should inject an arrow function", function () {
-				const functor = new Injector().inject(container(), mark([], {}, (a) => [a]));
+				const functor = new Injector().inject(container(), (...a) => a);
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), ["x"]);
@@ -103,12 +109,12 @@ describe("Injector", function () {
 
 			it("should inject a class constructor", function () {
 				const target  = class {
-					constructor(a) {
-						this.args = [a];
+					constructor(...a) {
+						this.args = a;
 					}
 				};
 
-				const functor = new Injector().inject(container(), mark([], {}, target));
+				const functor = new Injector().inject(container(), target);
 
 				assert(functor instanceof Function);
 
@@ -120,21 +126,27 @@ describe("Injector", function () {
 
 			it("should inject a class method", function () {
 				const target = class {
-					foo(a) {
-						return [this, a];
+					foo(...a) {
+						return [this].concat(a);
 					}
+
+					bar() {}
 				};
 				const instance = new target();
 
-				const functor = new Injector().inject(container(), mark([], {}, instance.foo)).bind(instance);
-
+				let functor = new Injector().inject(container(), instance.foo, instance);
 				assert(functor instanceof Function);
 
-				const result = functor("x");
-
-				assert(result.length === 2);
+				let result = functor("x");
+				assert.equal(result.length, 2);
 				assert(result[0] instanceof target);
 				assert.deepEqual(result.slice(1), ["x"]);
+
+				functor = new Injector().inject(container(), instance.bar, instance);
+				assert(functor instanceof Function);
+
+				result = functor();
+				assert.equal(result, undefined);
 			});
 		});
 	});
@@ -144,7 +156,7 @@ describe("Injector", function () {
 			a: {value: 1},
 		});
 
-		it("should inject a function ", function () {
+		it("should inject a function", function () {
 			const functor = new Injector().inject(container(), function (a) {
 				return [a];
 			});
@@ -182,32 +194,38 @@ describe("Injector", function () {
 				foo(a) {
 					return [this, a];
 				}
+
+				bar() {}
 			};
 			const instance = new target();
 
-			const functor = new Injector().inject(container(), instance.foo).bind(instance);
-
+			let functor = new Injector().inject(container(), instance.foo, instance);
 			assert(functor instanceof Function);
 
-			const result = functor();
-
-			assert(result.length === 2);
+			let result = functor();
+			assert.equal(result.length, 2);
 			assert(result[0] instanceof target);
 			assert.deepEqual(result.slice(1), [1]);
+
+			functor = new Injector().inject(container(), instance.bar, instance);
+			assert(functor instanceof Function);
+
+			result = functor();
+			assert.equal(result, undefined);
 		});
 
 		describe("with extra parameters", function () {
 			it("should inject a function ", function () {
-				const functor = new Injector().inject(container(), mark(["a"], {}, function (a, b) {
-					return [a, b];
-				}));
+				const functor = new Injector().inject(container(), function (a, ...b) {
+					return [a].concat(b);
+				});
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), [1, "x"]);
 			});
 
 			it("should inject an arrow function", function () {
-				const functor = new Injector().inject(container(), mark(["a"], {}, (a, b) => [a, b]));
+				const functor = new Injector().inject(container(), (a, ...b) => [a].concat(b));
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), [1, "x"]);
@@ -215,12 +233,12 @@ describe("Injector", function () {
 
 			it("should inject a class constructor", function () {
 				const target  = class {
-					constructor(a, b) {
-						this.args = [a, b];
+					constructor(a, ...b) {
+						this.args = [a].concat(b);
 					}
 				};
 
-				const functor = new Injector().inject(container(), mark(["a"], {}, target));
+				const functor = new Injector().inject(container(), target);
 
 				assert(functor instanceof Function);
 
@@ -232,21 +250,27 @@ describe("Injector", function () {
 
 			it("should inject a class method", function () {
 				const target = class {
-					foo(a, b) {
-						return [this, a, b];
+					foo(a, ...b) {
+						return [this, a].concat(b);
 					}
+
+					bar() {}
 				};
 				const instance = new target();
 
-				const functor = new Injector().inject(container(), mark(["a"], {}, instance.foo)).bind(instance);
-
+				let functor = new Injector().inject(container(), instance.foo, instance);
 				assert(functor instanceof Function);
 
-				const result = functor("x");
-
-				assert(result.length === 3);
+				let result = functor("x");
+				assert.equal(result.length, 3);
 				assert(result[0] instanceof target);
 				assert.deepEqual(result.slice(1), [1, "x"]);
+
+				functor = new Injector().inject(container(), instance.bar, instance);
+				assert(functor instanceof Function);
+
+				result = functor();
+				assert.equal(result, undefined);
 			});
 		});
 	});
@@ -295,32 +319,38 @@ describe("Injector", function () {
 				foo(a, b) {
 					return [this, a, b];
 				}
+
+				bar() {}
 			};
 			const instance = new target();
 
-			const functor = new Injector().inject(container(), instance.foo).bind(instance);
-
+			let functor = new Injector().inject(container(), instance.foo, instance);
 			assert(functor instanceof Function);
 
-			const result = functor();
-
-			assert(result.length === 3);
+			let result = functor();
+			assert.equal(result.length, 3);
 			assert(result[0] instanceof target);
 			assert.deepEqual(result.slice(1), [1, 2]);
+
+			functor = new Injector().inject(container(), instance.bar, instance);
+			assert(functor instanceof Function);
+
+			result = functor();
+			assert.equal(result, undefined);
 		});
 
 		describe("with extra parameters", function () {
 			it("should inject a function", function () {
-				const functor = new Injector().inject(container(), mark(["a", "b"], {}, function (a, b, c) {
-					return [a, b, c];
-				}));
+				const functor = new Injector().inject(container(), function (a, b, ...c) {
+					return [a, b].concat(c);
+				});
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), [1, 2, "x"]);
 			});
 
 			it("should inject an arrow function", function () {
-				const functor = new Injector().inject(container(), mark(["a", "b"], {}, (a, b, c) => [a, b, c]));
+				const functor = new Injector().inject(container(), (a, b, ...c) => [a, b].concat(c));
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), [1, 2, "x"]);
@@ -328,12 +358,12 @@ describe("Injector", function () {
 
 			it("should inject a class constructor", function () {
 				const target  = class {
-					constructor(a, b, c) {
-						this.args = [a, b, c];
+					constructor(a, b, ...c) {
+						this.args = [a, b].concat(c);
 					}
 				};
 
-				const functor = new Injector().inject(container(), mark(["a", "b"], {}, target));
+				const functor = new Injector().inject(container(), target);
 
 				assert(functor instanceof Function);
 
@@ -345,21 +375,27 @@ describe("Injector", function () {
 
 			it("should inject a class method", function () {
 				const target = class {
-					foo(a, b, c) {
-						return [this, a, b, c];
+					foo(a, b, ...c) {
+						return [this, a, b].concat(c);
 					}
+
+					bar() {}
 				};
 				const instance = new target();
 
-				const functor = new Injector().inject(container(), mark(["a", "b"], {}, instance.foo)).bind(instance);
-
+				let functor = new Injector().inject(container(), instance.foo, instance);
 				assert(functor instanceof Function);
 
-				const result = functor("x");
-
-				assert(result.length === 4);
+				let result = functor("x");
+				assert.equal(result.length, 4);
 				assert(result[0] instanceof target);
 				assert.deepEqual(result.slice(1), [1, 2, "x"]);
+
+				functor = new Injector().inject(container(), instance.bar, instance);
+				assert(functor instanceof Function);
+
+				result = functor();
+				assert.equal(result, undefined);
 			});
 		});
 	});
