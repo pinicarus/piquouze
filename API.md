@@ -50,7 +50,7 @@ Dependencies can be any first class value except undefined, or a factory functio
         * [.createChild()](#Container+createChild) ⇒ <code>[Container](#Container)</code>
         * [.registerValue(name, value)](#Container+registerValue)
         * [.registerFactory([name], functor, [policy])](#Container+registerFactory)
-        * [.inject(functor, [values])](#Container+inject) ⇒ <code>function</code>
+        * [.inject(functor, [context])](#Container+inject) ⇒ <code>function</code>
         * [.getOwnEntries()](#Container+getOwnEntries) ⇒ <code>[Iterable](#Iterable)</code>
         * [.getEntries()](#Container+getEntries) ⇒ <code>[Iterable](#Iterable)</code>
     * _static_
@@ -101,7 +101,7 @@ Registers a factory value.
 
 <a name="Container+inject"></a>
 
-## container.inject(functor, [values]) ⇒ <code>function</code>
+## container.inject(functor, [context]) ⇒ <code>function</code>
 Injects a functor with registered values.
 
 **Kind**: instance method of <code>[Container](#Container)</code>  
@@ -114,7 +114,7 @@ Injects a functor with registered values.
 | Param | Type | Description |
 | --- | --- | --- |
 | functor | <code>function</code> | The functor to inject. |
-| [values] | <code>Object.&lt;String, \*&gt;</code> | Extra injectable dependencies. |
+| [context] | <code>\*</code> | The context to bind the injected functor to. |
 
 <a name="Container+getOwnEntries"></a>
 

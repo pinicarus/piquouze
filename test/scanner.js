@@ -40,6 +40,23 @@ describe("Scanner", function () {
 			assert.deepEqual(scanner.defaults, {});
 		});
 
+		it("should scan anonymous generator", function () {
+			const scanner = new Scanner(function* () {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, null);
+			assert.deepEqual(scanner.params, []);
+			assert.deepEqual(scanner.defaults, {});
+		});
+
+		it("should scan named generator", function () {
+			const scanner = new Scanner(function* f() {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, []);
+			assert.deepEqual(scanner.defaults, {});
+		});
 		it("should scan anonymous class", function () {
 			const scanner = new Scanner(class {constructor() {}});
 
@@ -123,6 +140,16 @@ describe("Scanner", function () {
 			assert.deepEqual(scanner.params, []);
 			assert.deepEqual(scanner.defaults, {});
 		});
+
+		it("should scan class generator method", function () {
+			const C = class { *f() {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.kind, "method");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, []);
+			assert.deepEqual(scanner.defaults, {});
+		});
 	});
 
 	describe("with 1 parameter", function () {
@@ -155,6 +182,24 @@ describe("Scanner", function () {
 
 		it("should scan named function", function () {
 			const scanner = new Scanner(function f(a) {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, ["a"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
+
+		it("should scan anonymous generator", function () {
+			const scanner = new Scanner(function* (a) {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, null);
+			assert.deepEqual(scanner.params, ["a"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
+
+		it("should scan named generator", function () {
+			const scanner = new Scanner(function* f(a) {});
 
 			assert.equal(scanner.kind, "function");
 			assert.equal(scanner.name, "f");
@@ -245,6 +290,16 @@ describe("Scanner", function () {
 			assert.deepEqual(scanner.params, ["a"]);
 			assert.deepEqual(scanner.defaults, {});
 		});
+
+		it("should scan class generator method", function () {
+			const C = class { *f(a) {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.kind, "method");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, ["a"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
 	});
 
 	describe("with 2 parameters", function () {
@@ -268,6 +323,24 @@ describe("Scanner", function () {
 
 		it("should scan named function", function () {
 			const scanner = new Scanner(function f(a, b) {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
+
+		it("should scan anonymous generator", function () {
+			const scanner = new Scanner(function* (a, b) {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, null);
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
+
+		it("should scan named generator", function () {
+			const scanner = new Scanner(function* f(a, b) {});
 
 			assert.equal(scanner.kind, "function");
 			assert.equal(scanner.name, "f");
@@ -359,6 +432,16 @@ describe("Scanner", function () {
 			assert.deepEqual(scanner.params, ["a", "b"]);
 			assert.deepEqual(scanner.defaults, {});
 		});
+
+		it("should scan class generator method", function () {
+			const C = class { *f(a, b) {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.kind, "method");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
 	});
 
 	describe("with extra parameters", function () {
@@ -382,6 +465,24 @@ describe("Scanner", function () {
 
 		it("should scan named function", function () {
 			const scanner = new Scanner(function f(a, b, ...args) {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
+
+		it("should scan anonymous generator", function () {
+			const scanner = new Scanner(function* (a, b, ...args) {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, null);
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
+
+		it("should scan named generator", function () {
+			const scanner = new Scanner(function* f(a, b, ...args) {});
 
 			assert.equal(scanner.kind, "function");
 			assert.equal(scanner.name, "f");
@@ -473,6 +574,16 @@ describe("Scanner", function () {
 			assert.deepEqual(scanner.params, ["a", "b"]);
 			assert.deepEqual(scanner.defaults, {});
 		});
+
+		it("should scan class generator method", function () {
+			const C = class { *f(a, b, ...args) {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.kind, "method");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(scanner.defaults, {});
+		});
 	});
 
 	describe("with default value parameter", function () {
@@ -496,6 +607,24 @@ describe("Scanner", function () {
 
 		it("should scan named function", function () {
 			const scanner = new Scanner(function f(a, b = 1) {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(Object.keys(scanner.defaults), ["b"]);
+		});
+
+		it("should scan anonymous generator", function () {
+			const scanner = new Scanner(function* (a, b = 1) {});
+
+			assert.equal(scanner.kind, "function");
+			assert.equal(scanner.name, null);
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(Object.keys(scanner.defaults), ["b"]);
+		});
+
+		it("should scan named generator", function () {
+			const scanner = new Scanner(function* f(a, b = 1) {});
 
 			assert.equal(scanner.kind, "function");
 			assert.equal(scanner.name, "f");
@@ -580,6 +709,16 @@ describe("Scanner", function () {
 
 		it("should scan class method", function () {
 			const C = class { f(a, b = 1) {} };
+			const scanner = new Scanner(new C().f);
+
+			assert.equal(scanner.kind, "method");
+			assert.equal(scanner.name, "f");
+			assert.deepEqual(scanner.params, ["a", "b"]);
+			assert.deepEqual(Object.keys(scanner.defaults), ["b"]);
+		});
+
+		it("should scan class generator method", function () {
+			const C = class { *f(a, b = 1) {} };
 			const scanner = new Scanner(new C().f);
 
 			assert.equal(scanner.kind, "method");

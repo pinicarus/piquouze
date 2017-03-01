@@ -151,30 +151,22 @@ const Container = class Container {
 	/**
 	 * Injects a functor with registered values.
 	 *
-	 * @param {Function}          functor   - The functor to inject.
-	 * @param {Object<String, *>} [values]  - Extra injectable dependencies.
+	 * @param {Function} functor   - The functor to inject.
+	 * @param {*}        [context] - The context to bind the injected functor to.
 	 *
 	 * @returns {Function}  The injected functor.
 	 * @throws  {TypeError} Whenever the functor does not inherit from Function.
 	 */
-	inject(functor, values) {
+	inject(functor, context) {
 		const [
 			_functor,
-			_values,
+			_context,
 		] = facies.match(arguments, [
 			new facies.TypeDefinition(Function),
-			new facies.TypeDefinition(Object, null),
+			new facies.TypeDefinition({}, null),
 		], true);
-		let container = this;
 
-		if (_values) {
-			container = container.createChild();
-			for (const key in _values) {
-				container.registerValue(key, _values[key]);
-			}
-		}
-
-		return new Injector().inject(properties.get(container), _functor);
+		return new Injector().inject(properties.get(this), _functor, _context);
 	}
 
 	/**

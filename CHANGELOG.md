@@ -1,3 +1,7 @@
+# 5.0.0:
+  - Inject context from the inside
+  - Remove the extra dependencies at injection
+
 # 4.3.0:
   - Assume missing constructors are empty (#41)
 
