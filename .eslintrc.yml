@@ -31,6 +31,9 @@ rules:
    max-len:
       - error
       - code: 120
+   no-fallthrough:
+      - error
+      - commentPattern: fallthrough\b
    no-mixed-spaces-and-tabs:
       - error
       - smart-tabs
