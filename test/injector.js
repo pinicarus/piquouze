@@ -45,6 +45,24 @@ describe("Injector", function () {
 			assert.deepEqual(functor(), []);
 		});
 
+		it("should inject a generator", function () {
+			const functor = new Injector().inject(container(), function* () {
+				const a = yield 1;
+				const b = yield 2;
+				yield [a, b];
+			});
+
+			assert(functor instanceof Function);
+
+			const generator = functor();
+
+			assert.equal(generator.next().value, 1);
+			assert.equal(generator.next(3).value, 2);
+			assert.deepEqual(generator.next(4).value, [3, 4]);
+			assert.equal(generator.next().value, undefined);
+			assert.equal(generator.next().value, undefined);
+		});
+
 		it("should inject an arrow function", function () {
 			const functor = new Injector().inject(container(), () => []);
 
@@ -90,6 +108,36 @@ describe("Injector", function () {
 			assert.equal(result, undefined);
 		});
 
+		it("should inject a class generator method", function () {
+			const target = class {
+				*foo() {
+					const a = yield 1;
+					const b = yield 2;
+					yield [this, a, b];
+				}
+			};
+			const instance = new target();
+
+			const functor = new Injector().inject(container(), instance.foo, instance);
+
+			assert(functor instanceof Function);
+
+			const generator = functor();
+
+			assert.equal(generator.next().value, 1);
+			assert.equal(generator.next(3).value, 2);
+
+			const result = generator.next(4).value;
+
+			assert(result.length === 3);
+			assert(result[0] instanceof target);
+			assert.equal(result[1], 3);
+			assert.equal(result[2], 4);
+
+			assert.equal(generator.next().value, undefined);
+			assert.equal(generator.next().value, undefined);
+		});
+
 		describe("with extra parameters", function () {
 			it("should inject a function", function () {
 				const functor = new Injector().inject(container(), function (...a) {
@@ -98,6 +146,24 @@ describe("Injector", function () {
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), ["x"]);
+			});
+
+			it("should inject a generator", function () {
+				const functor = new Injector().inject(container(), function* (...a) {
+					const b = yield 1;
+					const c = yield 2;
+					yield a.concat(b, c);
+				});
+
+				assert(functor instanceof Function);
+
+				const generator = functor("x");
+
+				assert.equal(generator.next().value, 1);
+				assert.equal(generator.next("y").value, 2);
+				assert.deepEqual(generator.next("z").value, ["x", "y", "z"]);
+				assert.equal(generator.next("t").value, undefined);
+				assert.equal(generator.next("t").value, undefined);
 			});
 
 			it("should inject an arrow function", function () {
@@ -148,6 +214,35 @@ describe("Injector", function () {
 				result = functor();
 				assert.equal(result, undefined);
 			});
+
+			it("should inject a class generator method", function () {
+				const target = class {
+					*foo(...a) {
+						const b = yield 1;
+						const c = yield 2;
+						yield [this].concat(a, b, c);
+					}
+				};
+				const instance = new target();
+
+				const functor = new Injector().inject(container(), instance.foo, instance);
+
+				assert(functor instanceof Function);
+
+				const generator = functor("x");
+
+				assert.equal(generator.next().value, 1);
+				assert.equal(generator.next("y").value, 2);
+
+				const result = generator.next("z").value;
+
+				assert(result.length === 4);
+				assert(result[0] instanceof target);
+				assert.deepEqual(result.slice(1), ["x", "y", "z"]);
+
+				assert.equal(generator.next("t").value, undefined);
+				assert.equal(generator.next("t").value, undefined);
+			});
 		});
 	});
 
@@ -163,6 +258,22 @@ describe("Injector", function () {
 
 			assert(functor instanceof Function);
 			assert.deepEqual(functor(), [1]);
+		});
+
+		it("should inject a generator", function () {
+			const functor = new Injector().inject(container(), function* (a) {
+				const b = yield 1;
+				yield [a, b];
+			});
+
+			assert(functor instanceof Function);
+
+			const generator = functor();
+
+			assert.equal(generator.next().value, 1);
+			assert.deepEqual(generator.next(2).value, [1, 2]);
+			assert.equal(generator.next(3).value, undefined);
+			assert.equal(generator.next(3).value, undefined);
 		});
 
 		it("should inject an arrow function", function () {
@@ -214,6 +325,35 @@ describe("Injector", function () {
 			assert.equal(result, undefined);
 		});
 
+		it("should inject a class generator method", function () {
+			const target = class {
+				*foo(a) {
+					const b = yield "x";
+					const c = yield "y";
+					yield [this, a, b, c];
+				}
+			};
+			const instance = new target();
+
+			const functor = new Injector().inject(container(), instance.foo, instance);
+
+			assert(functor instanceof Function);
+
+			const generator = functor();
+
+			assert.equal(generator.next().value, "x");
+			assert.equal(generator.next(2).value, "y");
+
+			const result = generator.next(3).value;
+
+			assert(result.length === 4);
+			assert(result[0] instanceof target);
+			assert.deepEqual(result.slice(1), [1, 2, 3]);
+
+			assert.equal(generator.next(4).value, undefined);
+			assert.equal(generator.next(4).value, undefined);
+		});
+
 		describe("with extra parameters", function () {
 			it("should inject a function ", function () {
 				const functor = new Injector().inject(container(), function (a, ...b) {
@@ -222,6 +362,22 @@ describe("Injector", function () {
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), [1, "x"]);
+			});
+
+			it("should inject a generator", function () {
+				const functor = new Injector().inject(container(), function* (a, ...b) {
+					const c = yield 1;
+					yield [a].concat(b, c);
+				});
+
+				assert(functor instanceof Function);
+
+				const generator = functor(2);
+
+				assert.equal(generator.next().value, 1);
+				assert.deepEqual(generator.next(3).value, [1, 2, 3]);
+				assert.equal(generator.next(4).value, undefined);
+				assert.equal(generator.next(4).value, undefined);
 			});
 
 			it("should inject an arrow function", function () {
@@ -272,6 +428,35 @@ describe("Injector", function () {
 				result = functor();
 				assert.equal(result, undefined);
 			});
+
+			it("should inject a class generator method", function () {
+				const target = class {
+					*foo(a, ...b) {
+						const c = yield 1;
+						const d = yield 2;
+						yield [this].concat(a, b, c, d);
+					}
+				};
+				const instance = new target();
+
+				const functor = new Injector().inject(container(), instance.foo, instance);
+
+				assert(functor instanceof Function);
+
+				const generator = functor("x");
+
+				assert.equal(generator.next().value, 1);
+				assert.equal(generator.next("y").value, 2);
+
+				const result = generator.next("z").value;
+
+				assert(result.length === 5);
+				assert(result[0] instanceof target);
+				assert.deepEqual(result.slice(1), [1, "x", "y", "z"]);
+
+				assert.equal(generator.next("t").value, undefined);
+				assert.equal(generator.next("t").value, undefined);
+			});
 		});
 	});
 
@@ -288,6 +473,22 @@ describe("Injector", function () {
 
 			assert(functor instanceof Function);
 			assert.deepEqual(functor(), [1, 2]);
+		});
+
+		it("should inject a generator", function () {
+			const functor = new Injector().inject(container(), function* (a, b) {
+				const c = yield 1;
+				yield [a, b, c];
+			});
+
+			assert(functor instanceof Function);
+
+			const generator = functor();
+
+			assert.equal(generator.next().value, 1);
+			assert.deepEqual(generator.next(3).value, [1, 2, 3]);
+			assert.equal(generator.next(4).value, undefined);
+			assert.equal(generator.next(4).value, undefined);
 		});
 
 		it("should inject an arrow function", function () {
@@ -339,6 +540,35 @@ describe("Injector", function () {
 			assert.equal(result, undefined);
 		});
 
+		it("should inject a class generator method", function () {
+			const target = class {
+				*foo(a, b) {
+					const c = yield "x";
+					const d = yield "y";
+					yield [this, a, b, c, d];
+				}
+			};
+			const instance = new target();
+
+			const functor = new Injector().inject(container(), instance.foo, instance);
+
+			assert(functor instanceof Function);
+
+			const generator = functor();
+
+			assert.equal(generator.next().value, "x");
+			assert.equal(generator.next(3).value, "y");
+
+			const result = generator.next(4).value;
+
+			assert(result.length === 5);
+			assert(result[0] instanceof target);
+			assert.deepEqual(result.slice(1), [1, 2, 3, 4]);
+
+			assert.equal(generator.next(5).value, undefined);
+			assert.equal(generator.next(5).value, undefined);
+		});
+
 		describe("with extra parameters", function () {
 			it("should inject a function", function () {
 				const functor = new Injector().inject(container(), function (a, b, ...c) {
@@ -347,6 +577,22 @@ describe("Injector", function () {
 
 				assert(functor instanceof Function);
 				assert.deepEqual(functor("x"), [1, 2, "x"]);
+			});
+
+			it("should inject a generator", function () {
+				const functor = new Injector().inject(container(), function* (a, b, ...c) {
+					const d = yield 1;
+					yield [a, b].concat(c, d);
+				});
+
+				assert(functor instanceof Function);
+
+				const generator = functor(3);
+
+				assert.equal(generator.next().value, 1);
+				assert.deepEqual(generator.next(4).value, [1, 2, 3, 4]);
+				assert.equal(generator.next(5).value, undefined);
+				assert.equal(generator.next(5).value, undefined);
 			});
 
 			it("should inject an arrow function", function () {
@@ -396,6 +642,35 @@ describe("Injector", function () {
 
 				result = functor();
 				assert.equal(result, undefined);
+			});
+
+			it("should inject a class generator method", function () {
+				const target = class {
+					*foo(a, b, ...c) {
+						const d = yield 1;
+						const e = yield 2;
+						yield [this].concat(a, b, c, d, e);
+					}
+				};
+				const instance = new target();
+
+				const functor = new Injector().inject(container(), instance.foo, instance);
+
+				assert(functor instanceof Function);
+
+				const generator = functor("x");
+
+				assert.equal(generator.next().value, 1);
+				assert.equal(generator.next("y").value, 2);
+
+				const result = generator.next("z").value;
+
+				assert(result.length === 6);
+				assert(result[0] instanceof target);
+				assert.deepEqual(result.slice(1), [1, 2, "x", "y", "z"]);
+
+				assert.equal(generator.next("t").value, undefined);
+				assert.equal(generator.next("t").value, undefined);
 			});
 		});
 	});
