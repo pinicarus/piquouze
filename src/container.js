@@ -78,12 +78,12 @@ const Container = class Container {
 	 * @returns {Container} The merged containers.
 	 */
 	static merge(...containers) {
-		facies.match(containers, new Array(containers.length).fill(new facies.TypeDefinition(Container)), true);
+		facies.match(new Array(containers.length).fill(facies.any), containers);
 
 		const child = new Container();
 		let   next  = properties.get(child);
 
-		for(let values = containers.map((container) => properties.get(container));
+		for(let values = containers.map((container) => properties.get(container) || {});
 			 values.length > 0;
 			 values = values.reduce((parents, value) => {
 				const parent = Object.getPrototypeOf(value);
@@ -109,7 +109,10 @@ const Container = class Container {
 	 * @param {*}      value - The actual value.
 	 */
 	registerValue(name, value) {
-		facies.match(arguments, [new facies.TypeDefinition(String)], false);
+		facies.match([
+			String,
+			facies.any,
+		], arguments);
 
 		properties.get(this)[name] = {value};
 	}
@@ -121,20 +124,20 @@ const Container = class Container {
 	 * @param {Function} functor  - The actual factory.
 	 * @param {Policy}   [policy] - The caching policy.
 	 *
-	* @throws {TypeError} Whenever the functor does not inherit from Function.
-	* @throws {TypeError} Whenever the policy does not inherit from Policy.
-	* @throws {TypeError} Whenever no name was given and none could be inferred.
-	*/
+	 * @throws {TypeError} Whenever the functor is not a Function.
+	 * @throws {TypeError} Whenever the policy does not implement Policy.
+	 * @throws {TypeError} Whenever no name was given and none could be inferred.
+	 */
 	registerFactory(name, functor, policy) {
 		let [
 			_name,
 			_functor,
 			_policy,
-		] = facies.match(arguments, [
-			new facies.TypeDefinition(String, null),
-			new facies.TypeDefinition(Function),
-			new facies.TypeDefinition(Policy, defaultPolicy),
-		], true);
+		] = facies.match([
+			[String, null],
+			Function,
+			[{getValue: Function}, defaultPolicy],
+		], arguments);
 		const marking = mark(_functor);
 
 		_name = _name || marking.name;
@@ -161,10 +164,10 @@ const Container = class Container {
 		const [
 			_functor,
 			_context,
-		] = facies.match(arguments, [
-			new facies.TypeDefinition(Function),
-			new facies.TypeDefinition({}, null),
-		], true);
+		] = facies.match([
+			Function,
+			[facies.any, null],
+		], arguments);
 
 		return new Injector().inject(properties.get(this), _functor, _context);
 	}
