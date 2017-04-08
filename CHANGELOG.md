@@ -1,3 +1,7 @@
+# 5.1.0:
+  - Update dependencies
+  - Migrate code to facies 3
+
 # 5.0.0:
   - Inject context from the inside
   - Remove the extra dependencies at injection

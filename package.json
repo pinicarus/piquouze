@@ -1,6 +1,6 @@
 {
 	"name":        "piquouze",
-	"version":     "5.0.0",
+	"version":     "5.1.0",
 	"description": "A featureful dependency injection module",
 	"author":      "Pierre-Nicolas Clauss",
 	"license":     "WTFPL",
