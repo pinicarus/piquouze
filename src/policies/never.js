@@ -1,12 +1,10 @@
 "use strict";
 
-const Policy = require("../policy");
-
 /**
  * A caching policy that never caches any values.
  * @memberof caching
  */
-const NeverPolicy = class extends Policy {
+const NeverPolicy = class {
 	/**
 	 * Returns a new value from the factory.
 	 *

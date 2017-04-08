@@ -10,7 +10,6 @@ const facies = require("facies");
 
 const Injector = require("./injector");
 const PerInjectionPolicy = require("./policies/per-injection");
-const Policy = require("./policy");
 const mark = require("./mark");
 
 /**

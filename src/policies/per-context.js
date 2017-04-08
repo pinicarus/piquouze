@@ -1,7 +1,5 @@
 "use strict";
 
-const Policy = require("../policy");
-
 /**
  * Storage for internal properties of PerContextPolicy instances
  * @private
@@ -14,7 +12,7 @@ const properties = new WeakMap();
  * @private
  * @memberof caching
  */
-const PerContextPolicy = class extends Policy {
+const PerContextPolicy = class {
 	/**
 	 * Constructs a new caching policy on a given context field.
 	 *
@@ -22,7 +20,6 @@ const PerContextPolicy = class extends Policy {
 	 * @param {String}  field - The context field name to cache on.
 	 */
 	constructor(cache, field) {
-		super();
 		properties.set(this, {
 			cache,
 			field,
