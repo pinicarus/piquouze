@@ -6,10 +6,6 @@
 Each dependency is registered with a name and a caching policy.
 Dependencies can be any first class value except undefined, or a factory function or class.</p>
 </dd>
-<dt><a href="#Policy">Policy</a></dt>
-<dd><p>Parent class for all caching policies.
-Children classes must re-implement the `getValue&#39; method.</p>
-</dd>
 <dt><a href="#Scanner">Scanner</a></dt>
 <dd><p>A functor scanner.</p>
 <p>Scanning is based on the textual representation of the functor. It can be
@@ -88,8 +84,8 @@ Registers a factory value.
 **Kind**: instance method of <code>[Container](#Container)</code>  
 **Throws**:
 
-- <code>TypeError</code> Whenever the functor does not inherit from Function.
-- <code>TypeError</code> Whenever the policy does not inherit from Policy.
+- <code>TypeError</code> Whenever the functor is not a Function.
+- <code>TypeError</code> Whenever the policy does not implement Policy.
 - <code>TypeError</code> Whenever no name was given and none could be inferred.
 
 
@@ -97,7 +93,7 @@ Registers a factory value.
 | --- | --- | --- |
 | [name] | <code>String</code> | The name of the factory. |
 | functor | <code>function</code> | The actual factory. |
-| [policy] | <code>[Policy](#Policy)</code> | The caching policy. |
+| [policy] | <code>Policy</code> | The caching policy. |
 
 <a name="Container+inject"></a>
 
@@ -142,29 +138,6 @@ Merges multiple container hierarchies.
 | Param | Type | Description |
 | --- | --- | --- |
 | ...containers | <code>[Container](#Container)</code> | The list of containers to merge. |
-
-<a name="Policy"></a>
-
-# Policy
-Parent class for all caching policies.
-Children classes must re-implement the `getValue' method.
-
-**Kind**: global class  
-<a name="Policy+getValue"></a>
-
-## *policy.getValue(context, factory)*
-Returns a (possibly cached) value from the factory.
-
-**Kind**: instance abstract method of <code>[Policy](#Policy)</code>  
-**Throws**:
-
-- <code>NotImplementedError</code> The method must be overridden.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| context | <code>Context</code> | The injection context. |
-| factory | <code>function</code> | The injected factory. |
 
 <a name="Scanner"></a>
 
