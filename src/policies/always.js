@@ -1,14 +1,12 @@
 "use strict";
 
-const Policy = require("../policy");
-
 const cache = {};
 
 /**
  * A caching policy that will cache values forever across all containers.
  * @memberof caching
  */
-const AlwaysPolicy = class extends Policy {
+const AlwaysPolicy = class {
 	/**
 	 * Returns the value created from the factory.
 	 *

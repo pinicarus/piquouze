@@ -3,8 +3,6 @@
 module.exports = Object.freeze({
 	Container: require("./container"),
 
-	Policy: require("./policy"),
-
 	Scanner: require("./scanner"),
 
 	/**
