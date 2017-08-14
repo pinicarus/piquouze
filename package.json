@@ -1,52 +1,46 @@
 {
-	"name":        "piquouze",
-	"version":     "5.1.0",
-	"description": "A featureful dependency injection module",
-	"author":      "Pierre-Nicolas Clauss",
-	"license":     "WTFPL",
-	"homepage":    "https://github.com/pinicarus/piquouze#readme",
-	"main":        "src/index.js",
-
-	"scripts": {
-		"predoc":      "./generate-jsdoc-config.sh src > .jsdoc2md.json",
-		"doc":         "jsdoc2md > API.md",
-		"lint":        "eslint . --ignore-path .gitignore",
-		"unittest":    "mocha --opts ./.mocha.opts",
-		"unitcov":     "istanbul cover -- _mocha --opts ./.mocha.opts",
-		"postunitcov": "istanbul check-coverage",
-		"pretest":     "npm run lint",
-		"test":        "npm run unitcov",
-		"posttest":    "cat coverage/lcov.info | coveralls || true"
-	},
-
-	"repository": {
-		"type": "git",
-		"url":  "git+https://github.com/pinicarus/piquouze.git"
-	},
-
-	"keywords": [
-		"ioc",
-		"di",
-		"container",
-		"injection",
-		"dependency"
-	],
-
-	"bugs": {
-		"url": "https://github.com/pinicarus/piquouze/issues"
-	},
-
-	"dependencies": {
-		"escodegen": "1.8.1",
-		"esprima":   "4.0.0",
-		"facies":    "3.0.2"
-	},
-
-	"devDependencies": {
-		"coveralls":         "2.13.0",
-		"eslint":            "3.19.0",
-		"istanbul":          "0.4.5",
-		"jsdoc-to-markdown": "3.0.0",
-		"mocha":             "3.2.0"
-	}
+  "name": "piquouze",
+  "version": "5.1.1",
+  "description": "A featureful dependency injection module",
+  "author": "Pierre-Nicolas Clauss",
+  "license": "WTFPL",
+  "homepage": "https://github.com/pinicarus/piquouze#readme",
+  "main": "src/index.js",
+  "scripts": {
+    "predoc": "./generate-jsdoc-config.sh src > .jsdoc2md.json",
+    "doc": "jsdoc2md > API.md",
+    "lint": "eslint . --ignore-path .gitignore",
+    "unittest": "mocha --opts ./.mocha.opts",
+    "unitcov": "istanbul cover -- _mocha --opts ./.mocha.opts",
+    "postunitcov": "istanbul check-coverage",
+    "pretest": "npm run lint",
+    "test": "npm run unitcov",
+    "posttest": "cat coverage/lcov.info | coveralls || true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pinicarus/piquouze.git"
+  },
+  "keywords": [
+    "ioc",
+    "di",
+    "container",
+    "injection",
+    "dependency"
+  ],
+  "bugs": {
+    "url": "https://github.com/pinicarus/piquouze/issues"
+  },
+  "dependencies": {
+    "escodegen": "1.8.1",
+    "esprima": "4.0.0",
+    "facies": "3.0.2"
+  },
+  "devDependencies": {
+    "coveralls": "2.13.1",
+    "eslint": "4.4.1",
+    "istanbul": "0.4.5",
+    "jsdoc-to-markdown": "3.0.0",
+    "mocha": "3.5.0"
+  }
 }
