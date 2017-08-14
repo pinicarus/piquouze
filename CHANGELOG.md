@@ -1,3 +1,6 @@
+# 5.1.1:
+  - Update dependencies
+
 # 5.1.0:
   - Update dependencies
   - Migrate code to facies 3
