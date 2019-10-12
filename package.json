@@ -32,15 +32,15 @@
     "url": "https://github.com/pinicarus/piquouze/issues"
   },
   "dependencies": {
-    "escodegen": "1.8.1",
-    "esprima": "4.0.0",
-    "facies": "3.0.2"
+    "escodegen": "1.12.0",
+    "esprima": "4.0.1",
+    "facies": "3.0.3"
   },
   "devDependencies": {
-    "coveralls": "2.13.1",
-    "eslint": "4.4.1",
+    "coveralls": "3.0.7",
+    "eslint": "6.5.1",
     "istanbul": "0.4.5",
-    "jsdoc-to-markdown": "3.0.0",
-    "mocha": "3.5.0"
+    "jsdoc-to-markdown": "5.0.2",
+    "mocha": "6.2.1"
   }
 }

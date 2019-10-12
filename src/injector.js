@@ -77,7 +77,7 @@ const Injector = class Injector {
 		const marking                = mark(functor);
 
 		const dependencies = marking.inject.map((name) => {
-			if (!resolved.hasOwnProperty(name)) {
+			if (!Object.hasOwnProperty.call(resolved,name)) {
 				if (!(name in container)) {
 					if (!(name in marking.defaults)) {
 						throw new MissingDependencyError(name);
